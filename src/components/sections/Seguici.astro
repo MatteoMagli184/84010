@@ -1,0 +1,99 @@
+---
+/**
+ * Seguici su (al posto del carosello Instagram di mc8): riprende la grafica
+ * «Seguici su — Facebook e Instagram» con le due tessere ramate.
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Icon from '../ui/Icon.astro';
+import Coverflow from '../Coverflow.astro';
+import { seguici, instagramPhotos } from '@/data/content';
+import { social } from '@/data/site';
+import { rich } from '@/lib/rich';
+
+const tiles = [
+  { name: 'Facebook', icon: 'facebook', href: social.facebook.href, handle: social.facebook.handle },
+  { name: 'Instagram', icon: 'instagram', href: social.instagram.href, handle: `@${social.instagram.handle}` },
+] as const;
+---
+<Section id="seguici" tone="deep" tight label="Seguici sui social">
+  <Container>
+    <div class="mc-sg">
+      <div>
+        <p class="kicker">{seguici.kicker}</p>
+        <h2 class="section-title mc-sg-title" set:html={rich(seguici.title)} />
+        <p class="mc-sg-lead" data-stagger>{seguici.lead}</p>
+      </div>
+      <ul class="mc-sg-tiles">
+        {tiles.map((t) => (
+          <li data-reveal>
+            <a href={t.href} target="_blank" rel="noopener me" class="mc-sg-tile" aria-label={`${t.name} di 84010 Pizzeria`}>
+              <span class="mc-sg-ic"><Icon name={t.icon} size={40} stroke={1.8} /></span>
+              <span class="mc-sg-name">{t.name}</span>
+              <span class="mc-sg-handle">{t.handle}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Container>
+  <div class="mc-sg-flow" data-reveal>
+    <Coverflow photos={instagramPhotos} href={social.instagram.href} label="Foto dal profilo Instagram" openLabel="apri Instagram" />
+  </div>
+</Section>
+
+<style>
+  .mc-sg {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .mc-sg { grid-template-columns: 1fr auto; gap: 4rem; }
+  }
+  .mc-sg-title { font-size: var(--text-display); }
+  .mc-sg-lead {
+    margin-top: 1.25rem;
+    max-width: 44ch;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+  .mc-sg-flow { margin-top: 3.5rem; overflow: hidden; }
+  .mc-sg-tiles { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+  .mc-sg-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    width: 11rem;
+    padding: 1.4rem;
+    border-radius: var(--radius-card);
+    border: 1px solid rgb(246 183 101 / 0.2);
+    background: rgb(23 18 14 / 0.7);
+    transition: transform 0.4s var(--ease-out), border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  .mc-sg-tile:hover {
+    transform: translateY(-5px);
+    border-color: rgb(246 183 101 / 0.55);
+    box-shadow: 0 0 50px -20px rgb(190 111 41 / 0.7);
+  }
+  /* Tessera ramata come nelle grafiche social */
+  .mc-sg-ic {
+    display: grid;
+    place-items: center;
+    width: 4.25rem;
+    height: 4.25rem;
+    margin-bottom: 0.75rem;
+    border-radius: 1rem;
+    background: linear-gradient(160deg, #ffd196 0%, #f6b765 22%, #be6f29 55%, #783b09 100%);
+    color: #1a0f08;
+    box-shadow: inset 0 1px 0 rgb(255 230 190 / 0.7), 0 14px 30px -14px rgb(190 111 41 / 0.8);
+  }
+  .mc-sg-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.3rem;
+    color: var(--color-sand);
+  }
+  .mc-sg-handle { font-size: 0.82rem; color: var(--color-muted); }
+</style>

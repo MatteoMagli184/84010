@@ -1,0 +1,8 @@
+---
+import Page from '@/layouts/Page.astro';
+import { waBooking } from '@/data/site';
+---
+<Page title="Pagina non trovata" kicker="404" noindex>
+  <p>La pagina che cercavi non esiste o è stata spostata.</p>
+  <p><a href="/">Torna alla home</a> oppure <a href={waBooking} target="_blank" rel="noopener">prenota un tavolo su WhatsApp</a>.</p>
+</Page>

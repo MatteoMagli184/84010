@@ -1,0 +1,305 @@
+---
+/**
+ * Depth Carousel: le card si dispongono su un asse Z, quella a fuoco davanti,
+ * le altre che arretrano in profondità con spread, tilt, calo di luminosità e
+ * sfocatura. Porting vanilla (DOM + transform CSS + un rAF per il tween)
+ * del componente React/GSAP di riferimento — nessuna libreria.
+ */
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  images: { src: ImageMetadata; alt: string }[];
+  label: string;
+  prevLabel?: string;
+  nextLabel?: string;
+  cardWidth?: number;
+  cardHeight?: number;
+  depth?: number;
+  spread?: number;
+  tilt?: number;
+  visibleCards?: number;
+  falloff?: number;
+  blur?: number;
+  duration?: number;
+  perspective?: number;
+  autoplay?: boolean;
+  autoplayDelay?: number;
+}
+const {
+  images,
+  label,
+  prevLabel = 'Previous',
+  nextLabel = 'Next',
+  cardWidth = 260,
+  cardHeight = 340,
+  depth = 200,
+  spread = 66,
+  tilt = 20,
+  visibleCards = 3,
+  falloff = 0.22,
+  blur = 5,
+  duration = 700,
+  perspective = 1400,
+  autoplay = true,
+  autoplayDelay = 3600,
+} = Astro.props;
+
+const cards = await Promise.all(
+  images.map(async ({ src, alt }, i) => {
+    const img = await getImage({ src, width: 640, height: 820, fit: 'cover', format: 'webp', quality: 80 });
+    return { i, src: img.src, alt };
+  }),
+);
+const cfg = { depth, spread, tilt, visibleCards, falloff, blur, duration, cardWidth };
+---
+<div
+  class="depthc"
+  data-depth-carousel
+  data-cfg={JSON.stringify(cfg)}
+  data-autoplay={autoplay ? autoplayDelay : ''}
+  style={`--dc-persp:${perspective}px; --dc-w:${cardWidth}px; --dc-h:${cardHeight}px`}
+  role="group"
+  aria-roledescription="carousel"
+  aria-label={label}
+  tabindex="0"
+>
+  <div class="depthc-stage">
+    {cards.map((card, i) => (
+      <div class="depthc-card" data-card data-index={i} aria-hidden={i === 0 ? 'false' : 'true'}>
+        <img src={card.src} alt={card.alt} draggable="false" loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+        <span class="depthc-tint" data-tint aria-hidden="true"></span>
+      </div>
+    ))}
+  </div>
+
+  <button type="button" class="depthc-arrow depthc-prev" data-prev aria-label={prevLabel}>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </button>
+  <button type="button" class="depthc-arrow depthc-next" data-next aria-label={nextLabel}>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </button>
+
+  <div class="depthc-dots" role="tablist" aria-label="Slides">
+    {cards.map((_, i) => (
+      <button type="button" role="tab" class="depthc-dot" data-dot data-index={i} aria-label={`${i + 1}`} aria-selected={i === 0 ? 'true' : 'false'}></button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .depthc {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: calc(var(--dc-h) + 5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: var(--dc-persp);
+    perspective-origin: 50% 50%;
+    touch-action: pan-y;
+    outline: none;
+    user-select: none;
+    cursor: grab;
+  }
+  .depthc:active { cursor: grabbing; }
+  .depthc:focus-visible { outline: 2px solid var(--color-copper-light); outline-offset: 6px; }
+  .depthc-stage { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .depthc-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--dc-w);
+    height: var(--dc-h);
+    transform-origin: center center;
+    overflow: hidden;
+    border-radius: 0.9rem;
+    background: #17120e;
+    box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.45), 0 8px 20px -10px rgb(0 0 0 / 0.4);
+    will-change: transform, opacity, filter;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+  }
+  .depthc-card img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
+  .depthc-tint { position: absolute; inset: 0; opacity: 0; pointer-events: none; background: #05060a; mix-blend-mode: multiply; }
+
+  .depthc-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3000;
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    border: 1px solid rgb(246 183 101 / 0.35);
+    border-radius: 999px;
+    background: rgb(22 14 9 / 0.7);
+    backdrop-filter: blur(8px);
+    color: var(--color-copper-light);
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+  .depthc-arrow:hover { border-color: var(--color-copper-light); }
+  .depthc-arrow:active { transform: translateY(-50%) scale(0.94); }
+  .depthc-prev { left: 4px; }
+  .depthc-next { right: 4px; }
+
+  .depthc-dots {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3000;
+    display: flex; gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgb(22 14 9 / 0.6);
+    backdrop-filter: blur(6px);
+  }
+  .depthc-dot {
+    width: 7px; height: 7px; padding: 0; border: 0; border-radius: 999px;
+    background: rgb(239 229 216 / 0.3);
+    cursor: pointer;
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  .depthc-dot[aria-selected='true'] { width: 20px; background: var(--color-copper-light); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .depthc-card { will-change: auto; }
+    .depthc-arrow, .depthc-dot { transition: none; }
+  }
+</style>
+
+<script>
+  const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
+  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+  document.querySelectorAll<HTMLElement>('[data-depth-carousel]').forEach((root) => {
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-card]')];
+    const dots = [...root.querySelectorAll<HTMLElement>('[data-dot]')];
+    const n = cards.length;
+    if (!n) return;
+    const cfg = JSON.parse(root.dataset.cfg || '{}');
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+    let pos = 0;
+    let focus = 0;
+    let scale = 1;
+    let rafId = 0;
+
+    const layout = (p: number) => {
+      for (let i = 0; i < n; i++) {
+        const el = cards[i];
+        let d = i - p;
+        d = ((d % n) + n) % n;
+        if (d > n / 2) d -= n;
+        const back = Math.max(0, d);
+        const shown = Math.abs(d) <= cfg.visibleCards + 0.5;
+        const tz = -cfg.depth * d;
+        const tx = cfg.spread * d;
+        const ry = cfg.tilt * clamp(d, 0, 1);
+        let opacity = d < 0 ? Math.max(0, 1 + d) : 1;
+        if (!shown) opacity = 0;
+        const brightness = Math.max(0.15, 1 - back * cfg.falloff);
+        const blurPx = cfg.blur > 0 ? Math.min(cfg.blur, (back / Math.max(1, cfg.visibleCards)) * cfg.blur) : 0;
+        el.style.transform = `translate(-50%, -50%) scale(${scale}) translateX(${tx.toFixed(2)}px) translateZ(${tz.toFixed(2)}px) rotateY(${ry.toFixed(2)}deg)`;
+        el.style.opacity = opacity.toFixed(3);
+        el.style.filter = `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(2)}px)`;
+        el.style.zIndex = String(Math.round(2000 - d * 20));
+        el.style.pointerEvents = shown && opacity > 0.05 ? 'auto' : 'none';
+        const tint = el.querySelector<HTMLElement>('[data-tint]');
+        if (tint) tint.style.opacity = clamp(back * cfg.falloff * 1.25, 0, 0.86).toFixed(3);
+      }
+    };
+
+    const setActive = (idx: number) => {
+      cards.forEach((c, i) => c.setAttribute('aria-hidden', i === idx ? 'false' : 'true'));
+      dots.forEach((dt, i) => dt.setAttribute('aria-selected', i === idx ? 'true' : 'false'));
+    };
+
+    const tweenTo = (target: number, animate: boolean) => {
+      cancelAnimationFrame(rafId);
+      const dur = animate && !reduced ? cfg.duration : 0;
+      const start = pos;
+      const change = target - start;
+      const startT = performance.now();
+      const step = (now: number) => {
+        const t = dur === 0 ? 1 : Math.min(1, (now - startT) / dur);
+        pos = start + change * easeOutCubic(t);
+        layout(pos);
+        if (t < 1) rafId = requestAnimationFrame(step);
+        else { pos = ((pos % n) + n) % n; layout(pos); }
+      };
+      rafId = requestAnimationFrame(step);
+    };
+
+    const setFocus = (raw: number, animate = true) => {
+      const idx = ((raw % n) + n) % n;
+      let delta = idx - pos;
+      delta = ((delta % n) + n) % n;
+      if (delta > n / 2) delta -= n;
+      tweenTo(pos + delta, animate);
+      if (idx !== focus) { focus = idx; setActive(idx); }
+    };
+    const navBy = (s: number) => setFocus(focus + s, true);
+
+    // Interazioni
+    root.querySelector('[data-prev]')?.addEventListener('click', () => navBy(-1));
+    root.querySelector('[data-next]')?.addEventListener('click', () => navBy(1));
+    dots.forEach((dt, i) => dt.addEventListener('click', () => setFocus(i, true)));
+    cards.forEach((c, i) => c.addEventListener('click', () => { if (!dragged) setFocus(i, true); }));
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); navBy(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); navBy(1); }
+    });
+
+    // Drag orizzontale
+    let drag: { x: number; startPos: number; id: number } | null = null;
+    let dragged = false;
+    root.addEventListener('pointerdown', (e) => {
+      if (n < 2) return;
+      cancelAnimationFrame(rafId);
+      drag = { x: e.clientX, startPos: pos, id: e.pointerId };
+      dragged = false;
+    });
+    root.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const stepPx = Math.max(cfg.cardWidth * 0.55 * scale, 40);
+      const dx = e.clientX - drag.x;
+      if (!dragged && Math.abs(dx) > 4) { dragged = true; root.setPointerCapture(drag.id); }
+      if (!dragged) return;
+      pos = drag.startPos - dx / stepPx;
+      layout(pos);
+    });
+    const endDrag = () => {
+      if (!drag) return;
+      const moved = dragged;
+      drag = null;
+      if (moved) setFocus(Math.round(pos), true);
+      setTimeout(() => (dragged = false), 0);
+    };
+    root.addEventListener('pointerup', endDrag);
+    root.addEventListener('pointercancel', endDrag);
+
+    // Scala responsiva
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0].contentRect.width;
+      const needed = cfg.cardWidth + Math.abs(cfg.spread) * 2 + 100;
+      scale = clamp(w / needed, 0.4, 1);
+      layout(pos);
+    });
+    ro.observe(root);
+
+    // Autoplay
+    const delay = Number(root.dataset.autoplay);
+    if (delay && !reduced && n > 1) {
+      let hovered = false;
+      window.setInterval(() => { if (!hovered && !document.hidden) navBy(1); }, Math.max(delay, 900));
+      root.addEventListener('mouseenter', () => (hovered = true));
+      root.addEventListener('mouseleave', () => (hovered = false));
+    }
+
+    layout(pos);
+    setActive(0);
+  });
+</script>

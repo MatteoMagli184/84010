@@ -1,0 +1,109 @@
+---
+/**
+ * La famiglia (Assistenza di mc8) in versione editoriale: tre colonne
+ * separate da filetti, numeri romani in corsivo ramato, filo che si accende
+ * al passaggio del mouse.
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import { famiglia } from '@/data/content';
+import { rich } from '@/lib/rich';
+
+const roman = ['I', 'II', 'III'];
+---
+<Section id="famiglia" tone="alt" label="La famiglia">
+  <Container>
+    <div class="fm-head">
+      <p class="kicker">{famiglia.kicker}</p>
+      <h2 class="section-title" set:html={rich(famiglia.title)} />
+    </div>
+
+    <ol class="fm-grid">
+      {famiglia.cards.map((s, i) => (
+        <li class="fm-col" data-reveal style={`--d:${i * 0.15}s`}>
+          <span class="fm-num" aria-hidden="true">{roman[i]}</span>
+          <h3 class="fm-title">{s.title}</h3>
+          <p class="fm-body">{s.body}</p>
+          <p class="fm-tags">{s.items.join(' · ')}</p>
+        </li>
+      ))}
+    </ol>
+  </Container>
+</Section>
+
+<style>
+  .fm-head {
+    max-width: 44rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .fm-head :global(.kicker) { justify-content: center; }
+  .fm-grid {
+    margin-top: 4.5rem;
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 900px) {
+    .fm-grid { grid-template-columns: repeat(3, 1fr); gap: 0; }
+  }
+  .fm-grid .fm-col {
+    position: relative;
+    padding: 2.5rem 0 0;
+    border-top: 1px solid var(--color-line);
+    transition: opacity 0.9s var(--ease-out) var(--d, 0s);
+  }
+  @media (min-width: 900px) {
+    .fm-grid .fm-col { padding: 2.75rem 2.75rem 0.5rem; border-top: 0; text-align: center; }
+    .fm-col + .fm-col { border-left: 1px solid var(--color-line); }
+  }
+  /* filo ramato che si accende */
+  .fm-col::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 100%;
+    height: 1px;
+    background: var(--copper-line);
+    transform: scaleX(0);
+    transition: transform 0.8s var(--ease-out);
+  }
+  @media (min-width: 900px) {
+    .fm-col::before { left: 20%; width: 60%; top: 0; }
+  }
+  .fm-col:hover::before { transform: scaleX(1); }
+  .fm-num {
+    display: block;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 2.6rem;
+    line-height: 1;
+    background-image: var(--copper-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .fm-title {
+    margin-top: 1.4rem;
+    font-size: clamp(1.5rem, 2.2vw, 1.85rem);
+    line-height: 1.2;
+    color: var(--color-sand);
+  }
+  .fm-body {
+    margin: 1rem auto 0;
+    max-width: 34ch;
+    font-size: 0.98rem;
+    line-height: 1.8;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+  @media (max-width: 899px) { .fm-body { margin-left: 0; } }
+  .fm-tags {
+    margin-top: 1.5rem;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+  }
+</style>

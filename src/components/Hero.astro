@@ -1,0 +1,331 @@
+---
+/**
+ * Hero cinematografica: foto a tutto schermo in dissolvenza con Ken Burns
+ * (effetto mc8), velo scuro e vignettatura calda, composizione centrata
+ * con il logo, il titolo H1 e le due azioni. In basso: indirizzo e telefono.
+ * Il profilo del Vesuvio (dal logo) si disegna in rame lungo il bordo inferiore.
+ */
+import { Image } from 'astro:assets';
+import Logo from './ui/Logo.astro';
+import Icon from './ui/Icon.astro';
+import { hero } from '@/data/content';
+import { photos } from '@/data/photos';
+import { address, contact, waBooking } from '@/data/site';
+
+const slides = [
+  { ...photos.pizzaNelForno, caption: 'Il forno a legna' },
+  { ...photos.salaPareteePietra, caption: 'La sala' },
+  { ...photos.margheritaDettaglio, caption: 'La margherita' },
+  { ...photos.impastoMani, caption: 'L’impasto' },
+];
+const ridge = 'M9 132 L225 31 L273 53 L321 31 L334 31 L345 38 L357 35 L530 132';
+---
+<section class="hx" id="top" aria-labelledby="hero-title">
+  <div class="hx-media" data-hero-carousel>
+    {slides.map((s, i) => (
+      <div class="hx-slide" data-slide data-active={i === 0 ? '' : undefined}>
+        <Image
+          src={s.src}
+          alt={i === 0 ? s.alt : ''}
+          widths={[768, 1280, 1600]}
+          sizes="100vw"
+          quality={76}
+          loading={i === 0 ? 'eager' : 'lazy'}
+          fetchpriority={i === 0 ? 'high' : undefined}
+          class="hx-img"
+          style={`object-position:${s.pos ?? '50% 50%'}`}
+        />
+      </div>
+    ))}
+    <div class="hx-veil" aria-hidden="true"></div>
+  </div>
+
+  <svg class="hx-ridge" viewBox="0 0 545 140" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="hx-copper" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#944f18" stop-opacity="0" />
+        <stop offset=".3" stop-color="#be6f29" stop-opacity=".8" />
+        <stop offset=".5" stop-color="#ffd196" />
+        <stop offset=".7" stop-color="#be6f29" stop-opacity=".8" />
+        <stop offset="1" stop-color="#944f18" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    <path d={ridge} pathLength="1" class="hx-ridge-line" />
+  </svg>
+
+  <div class="hx-inner">
+    <p class="hx-kicker"><span>{hero.kicker}</span></p>
+    <h1 class="hx-title" id="hero-title" data-no-stagger>
+      <span class="hx-logo">
+        <Logo width={30} eager alt="84010 Pizzeria" />
+      </span>
+      <span class="hx-h1">{hero.h1Line}</span>
+    </h1>
+    <p class="hx-claim">
+      {hero.claimTop} <em>{hero.claimBottom}</em>
+    </p>
+    <div class="hx-actions">
+      <a href={waBooking} target="_blank" rel="noopener" class="btn btn-copper">
+        <span class="btn-label">Prenota un tavolo <Icon name="arrow" class="btn-arrow" /></span>
+      </a>
+      <a href="#chi-siamo" class="btn btn-ghost"><span class="btn-label">La nostra storia</span></a>
+    </div>
+  </div>
+
+  <div class="hx-bar">
+    <a class="hx-bar-addr" href={address.mapsHref} target="_blank" rel="noopener">
+      <span class="hx-bar-label">Ci trovi in</span>
+      {address.street}, {address.city}
+    </a>
+    <a class="hx-bar-phone" href={contact.phone.href}>
+      <span class="hx-bar-label">Prenotazioni</span>
+      {contact.phone.label}
+    </a>
+  </div>
+</section>
+
+<style>
+  .hx {
+    --slide: 6.5s;
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: 7rem 1.25rem 9rem;
+    color: var(--color-sand);
+    background: var(--color-night);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* ---------- foto ---------- */
+  .hx-media { position: absolute; inset: 0; z-index: -1; }
+  .hx-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity 1.8s ease;
+  }
+  .hx-slide[data-active] { opacity: 1; z-index: 1; }
+  .hx-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.04);
+    filter: saturate(0.85) contrast(1.05) brightness(0.92);
+  }
+  .hx-slide[data-active] .hx-img { animation: hx-kenburns 9s ease-out forwards; }
+  @keyframes hx-kenburns {
+    from { transform: scale(1.04); }
+    to { transform: scale(1.14); }
+  }
+  /* Velo: vignettatura calda + scuro al centro per la leggibilità */
+  .hx-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+      radial-gradient(60% 55% at 50% 45%, rgb(22 14 9 / 0.62) 0%, rgb(22 14 9 / 0.45) 55%, rgb(22 14 9 / 0.8) 100%),
+      linear-gradient(to bottom, rgb(22 14 9 / 0.65) 0%, transparent 22%, transparent 62%, rgb(22 14 9 / 0.96) 100%);
+  }
+
+  /* ---------- Vesuvio in rame ---------- */
+  .hx-ridge {
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    bottom: 0;
+    width: min(46rem, 110vw);
+    height: auto;
+    transform: translateX(-50%);
+    overflow: visible;
+    pointer-events: none;
+    opacity: 0.6;
+    filter: drop-shadow(0 0 10px rgb(246 160 80 / 0.55));
+  }
+  .hx-ridge-line {
+    fill: none;
+    stroke: url(#hx-copper);
+    stroke-width: 1.1;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: hx-draw 3s cubic-bezier(0.65, 0, 0.35, 1) 0.8s forwards;
+  }
+  @keyframes hx-draw { to { stroke-dashoffset: 0; } }
+
+  /* ---------- contenuto centrato ---------- */
+  .hx-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 52rem;
+    text-align: center;
+  }
+  .hx-kicker {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+    animation: hx-up 1s var(--ease-out) 0.1s both;
+  }
+  .hx-kicker::before,
+  .hx-kicker::after {
+    content: '';
+    width: 2.75rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-copper));
+  }
+  .hx-kicker::after { transform: scaleX(-1); }
+  .hx-kicker span { padding-left: 0.42em; }
+
+  .hx-title {
+    margin-top: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+  }
+  .hx-logo {
+    display: block;
+    width: clamp(14rem, 32vw, 30rem);
+    filter: drop-shadow(0 20px 40px rgb(0 0 0 / 0.6));
+    animation: hx-logo 1.8s cubic-bezier(0.65, 0, 0.35, 1) 0.25s both;
+  }
+  .hx-logo :global(img) { width: 100% !important; height: auto; display: block; }
+  @keyframes hx-logo {
+    from { clip-path: inset(0 50% 0 50%); opacity: 0; filter: blur(6px) drop-shadow(0 20px 40px rgb(0 0 0 / 0.6)); }
+    to { clip-path: inset(0 0 0 0); opacity: 1; filter: blur(0) drop-shadow(0 20px 40px rgb(0 0 0 / 0.6)); }
+  }
+  .hx-h1 {
+    font-family: var(--font-sans);
+    font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+    font-weight: 500;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    padding-left: 0.5em;
+    color: var(--color-sand);
+    opacity: 0.9;
+    animation: hx-up 1s var(--ease-out) 1.3s both;
+  }
+  .hx-claim {
+    margin-top: 2.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.7vw, 2.35rem);
+    line-height: 1.3;
+    font-weight: 400;
+    color: var(--color-sand);
+    animation: hx-up 1s var(--ease-out) 1.5s both;
+  }
+  .hx-claim em {
+    display: block;
+    font-style: italic;
+    background: var(--copper-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hx-actions {
+    margin-top: 2.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem;
+    animation: hx-up 1s var(--ease-out) 1.7s both;
+  }
+  @keyframes hx-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ---------- barra inferiore ---------- */
+  .hx-bar {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: end;
+    gap: 1.5rem;
+    padding: 0 max(1.25rem, calc((100vw - 1360px) / 2 + 2.5rem)) 2rem;
+    font-size: 0.82rem;
+    animation: hx-up 1s var(--ease-out) 2s both;
+  }
+  .hx-bar-label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+  }
+  .hx-bar-addr,
+  .hx-bar-phone { transition: color 0.3s ease; line-height: 1.4; }
+  .hx-bar-addr:hover,
+  .hx-bar-phone:hover { color: var(--color-copper-light); }
+  .hx-bar-phone { display: none; }
+
+  @media (min-width: 1024px) {
+    .hx { padding-bottom: 8rem; }
+    .hx-bar { grid-template-columns: 1fr 1fr; }
+    .hx-bar-phone { display: block; justify-self: end; text-align: right; }
+  }
+  @media (max-width: 639px) {
+    .hx { padding-bottom: 10rem; }
+    .hx-bar { grid-template-columns: 1fr; padding-bottom: 6.25rem; text-align: center; }
+    .hx-kicker { letter-spacing: 0.26em; font-size: 0.58rem; white-space: nowrap; }
+    .hx-kicker::before, .hx-kicker::after { display: none; }
+    .hx-h1 { letter-spacing: 0.32em; }
+    .hx-claim { font-size: 1.35rem; }
+    .hx-claim em { margin-top: 0.15rem; }
+    .hx-actions .btn { flex: 1 1 100%; }
+    .hx-ridge { bottom: 5.25rem; opacity: 0.45; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hx-slide { transition: none; }
+    .hx-slide[data-active] .hx-img,
+    .hx-ridge-line { animation: none; stroke-dashoffset: 0; }
+    .hx-kicker, .hx-logo, .hx-h1, .hx-claim, .hx-actions, .hx-bar { animation: none; }
+  }
+</style>
+
+<script>
+  const carousel = document.querySelector<HTMLElement>('[data-hero-carousel]');
+  const root = carousel?.closest<HTMLElement>('.hx');
+  if (carousel && root) {
+    const slides = [...carousel.querySelectorAll<HTMLElement>('[data-slide]')];
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const DURATION = 6500;
+    if (slides.length > 1 && !reduce) {
+      let i = 0;
+      let timer: ReturnType<typeof setInterval>;
+      const restart = (el: HTMLElement | null | undefined) => {
+        if (!el) return;
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = '';
+      };
+      const go = (n: number) => {
+        slides[i].removeAttribute('data-active');
+        i = (n + slides.length) % slides.length;
+        slides[i].setAttribute('data-active', '');
+        restart(slides[i].querySelector<HTMLElement>('.hx-img'));
+      };
+      const start = () => { clearInterval(timer); timer = setInterval(() => go(i + 1), DURATION); };
+      const stop = () => clearInterval(timer);
+      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+      start();
+    }
+  }
+</script>

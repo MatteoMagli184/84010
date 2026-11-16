@@ -1,0 +1,237 @@
+---
+/**
+ * Header fisso (da mc8): trasparente sopra l'hero, vetro scuro quando si
+ * scorre, si nasconde scendendo e ricompare risalendo. Navigazione testuale
+ * (uguale su computer e telefono) con scrollspy sulla sezione corrente; su
+ * schermi stretti la riga scorre in orizzontale e la voce attiva resta in vista.
+ */
+import Logo from './ui/Logo.astro';
+import { nav, waBooking } from '@/data/site';
+
+interface Props {
+  home?: boolean;
+}
+const { home = false } = Astro.props;
+const to = (id: string) => (home ? `#${id}` : `/#${id}`);
+---
+<header class="mc-header" data-header data-over-dark={home ? '' : undefined}>
+  <div class="mc-veil" data-veil aria-hidden="true"></div>
+  <div class="mc-solid" data-solid aria-hidden="true"></div>
+
+  <div class="mc-bar">
+    <a href={home ? '#top' : '/'} class="mc-brand" aria-label="84010 Pizzeria — torna all'inizio">
+      <Logo width={5.6} eager alt="" />
+    </a>
+
+    <nav class="mc-nav" aria-label="Sezioni del sito" data-nav>
+      <div class="mc-nav-track">
+        {nav.map((item) => (
+          <a href={to(item.id)} class="mc-nav-item" data-spy={item.id}>{item.label}</a>
+        ))}
+      </div>
+    </nav>
+
+    <div class="mc-actions">
+      <a href={waBooking} target="_blank" rel="noopener" class="btn btn-ghost mc-cta">
+        <span class="btn-label">Prenota un tavolo</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .mc-header {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 50;
+    color: var(--color-sand);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), color 0.35s ease;
+  }
+  .mc-header[data-hidden] { transform: translateY(-115%); }
+  .mc-header.is-light { color: var(--color-sand); }
+
+  .mc-veil,
+  .mc-solid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+  }
+  .mc-veil {
+    opacity: 0;
+    background: linear-gradient(to bottom, rgb(28 18 12 / 0.55), transparent);
+  }
+  .mc-header[data-over-dark] .mc-veil { opacity: 1; }
+  .mc-solid {
+    opacity: 0;
+    background: rgb(22 14 9 / 0.78);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    box-shadow: 0 1px 0 rgb(246 183 101 / 0.18);
+  }
+
+  .mc-bar {
+    position: relative;
+    margin-inline: auto;
+    display: flex;
+    max-width: 1360px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1rem;
+    transition: padding 0.4s ease;
+  }
+  @media (min-width: 640px) { .mc-bar { padding-inline: 1.5rem; } }
+  @media (min-width: 768px) { .mc-bar { padding-inline: 2.5rem; } }
+  .mc-header[data-scrolled] .mc-bar { padding-block: 0.7rem; }
+
+  .mc-brand {
+    flex: 0 0 auto;
+    transition: opacity 0.3s ease;
+  }
+  .mc-brand:hover { opacity: 0.8; }
+  .mc-brand :global(img) { display: block; transition: width 0.4s ease; }
+  .mc-header[data-scrolled] .mc-brand :global(img) { width: 4.6rem !important; }
+
+  /* Navigazione testuale: maiuscoletto spaziato, puntino ramato sulla voce attiva */
+  .mc-nav {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+  }
+  .mc-nav-track {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mc-nav-track::-webkit-scrollbar { display: none; }
+  .mc-nav-item {
+    position: relative;
+    flex: 0 0 auto;
+    padding: 0.75rem 1rem;
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0.82;
+    transition: opacity 0.3s ease, color 0.3s ease;
+  }
+  .mc-nav-item::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0.2rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-copper-light);
+    transform: translateX(-50%) scale(0);
+    transition: transform 0.4s var(--ease-out);
+  }
+  .mc-nav-item:hover { opacity: 1; }
+  .mc-nav-item.is-active { color: var(--color-copper-light); opacity: 1; }
+  .mc-nav-item.is-active::after,
+  .mc-nav-item:hover::after { transform: translateX(-50%) scale(1); }
+
+  /* Telefono: niente logo né CTA in alto (logo grande nell'hero, barra fissa
+     in basso per chiamare/prenotare): la riga di voci prende tutta la larghezza,
+     scorre di lato e sfuma ai bordi. */
+  @media (max-width: 639px) {
+    .mc-brand { display: none; }
+    .mc-bar { padding-inline: 0; }
+    .mc-nav { justify-content: flex-start; }
+    .mc-nav-track {
+      gap: 0;
+      padding-inline: 0.75rem;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 1.25rem, #000 calc(100% - 1.75rem), transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 1.25rem, #000 calc(100% - 1.75rem), transparent 100%);
+    }
+    .mc-nav-item { padding: 0.75rem 0.85rem; font-size: 0.62rem; letter-spacing: 0.22em; }
+  }
+
+  /* Home: il logo piccolo compare solo dopo l'hero (che ha già il logo grande) */
+  .mc-header[data-over-dark]:not([data-scrolled]) .mc-brand { opacity: 0; pointer-events: none; transform: translateY(-6px); }
+  .mc-brand { transition: opacity 0.5s ease, transform 0.5s var(--ease-out); }
+
+  .mc-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .mc-cta { min-height: 2.6rem; padding: 0.65rem 1.25rem; font-size: 0.66rem; }
+
+  @media (max-width: 899px) {
+    .mc-cta { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mc-header, .mc-nav-item, .mc-nav-item::after { transition: none; }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const veil = document.querySelector<HTMLElement>('[data-veil]');
+  const solid = document.querySelector<HTMLElement>('[data-solid]');
+  const overDark = header?.hasAttribute('data-over-dark') ?? false;
+
+  let lastY = window.scrollY;
+  const sync = () => {
+    const y = window.scrollY;
+    const scrolled = y > 40 || !overDark;
+    header?.classList.toggle('is-light', !scrolled);
+    header?.toggleAttribute('data-scrolled', scrolled);
+    if (solid) solid.style.opacity = scrolled ? '1' : '0';
+    if (veil && overDark) veil.style.opacity = scrolled ? '0' : '1';
+
+    const goingDown = y > lastY + 2;
+    const goingUp = y < lastY - 2;
+    if (goingDown && y > 320) header?.setAttribute('data-hidden', '');
+    else if (goingUp || y <= 320) header?.removeAttribute('data-hidden');
+    lastY = y;
+  };
+  sync();
+  window.addEventListener('scroll', sync, { passive: true });
+
+  // Scrollspy: la voce della sezione che occupa il centro dello schermo si accende.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-spy]')];
+  const sections = links
+    .map((a) => document.getElementById(a.dataset.spy!))
+    .filter((s): s is HTMLElement => !!s);
+  const track = document.querySelector<HTMLElement>('[data-nav] .mc-nav-track');
+  let lastActive = '';
+  const spy = () => {
+    const mid = window.innerHeight * 0.45;
+    let current = '';
+    for (const s of sections) {
+      const r = s.getBoundingClientRect();
+      if (r.top <= mid && r.bottom > mid) current = s.id;
+    }
+    links.forEach((a) => {
+      const on = a.dataset.spy === current;
+      a.classList.toggle('is-active', on);
+      if (on) a.setAttribute('aria-current', 'location');
+      else a.removeAttribute('aria-current');
+      // Riga scorrevole (telefono): porta la voce attiva al centro, senza muovere la pagina
+      if (on && current !== lastActive && track && track.scrollWidth > track.clientWidth) {
+        const left = a.offsetLeft - (track.clientWidth - a.offsetWidth) / 2;
+        track.scrollTo({ left, behavior: 'smooth' });
+      }
+    });
+    lastActive = current;
+  };
+  if (sections.length) {
+    spy();
+    window.addEventListener('scroll', spy, { passive: true });
+    window.addEventListener('resize', spy);
+  }
+</script>

@@ -1,0 +1,181 @@
+---
+/**
+ * Contatti (da mc8): recapiti a riquadri + mappa del locale.
+ * NAP (nome, indirizzo, telefono) identici allo schema JSON-LD: aiuta la
+ * scheda Google locale.
+ */
+import Container from '../ui/Container.astro';
+import Icon from '../ui/Icon.astro';
+import MapEmbed from '../MapEmbed.astro';
+import { contatti } from '@/data/content';
+import { address, contact, hours, closedLabel, social } from '@/data/site';
+import { rich } from '@/lib/rich';
+
+type Info = { icon: 'whatsapp' | 'phone' | 'pin' | 'clock' | 'mail' | 'instagram'; label: string; value: string; href?: string; external?: boolean };
+const infos: Info[] = [
+  { icon: 'whatsapp', label: 'WhatsApp', value: contact.whatsapp.label, href: contact.whatsapp.href, external: true },
+  { icon: 'phone', label: 'Numero fisso', value: contact.phone.label, href: contact.phone.href },
+  { icon: 'pin', label: 'Ci trovi in', value: `${address.street}, ${address.postalCode} ${address.city} (${address.province})`, href: address.mapsHref, external: true },
+  ...(hours.length
+    ? [{ icon: 'clock' as const, label: 'Orari', value: hours.map((h) => `${h.label} ${h.opens}–${h.closes}`).join(' · ') + (closedLabel ? ` · ${closedLabel}` : '') }]
+    : []),
+  ...(contact.email ? [{ icon: 'mail' as const, label: 'Email', value: contact.email, href: `mailto:${contact.email}` }] : []),
+  { icon: 'instagram', label: 'Instagram', value: `@${social.instagram.handle}`, href: social.instagram.href, external: true },
+];
+---
+<section id="contatti" class="mc-ct" aria-label="Contatti e prenotazioni">
+  <Container>
+    <div class="mc-ct-grid">
+      <div class="mc-ct-info">
+        <p class="kicker">{contatti.kicker}</p>
+        <h2 class="section-title" set:html={rich(contatti.title)} />
+        <p class="mc-ct-lead" data-stagger>{contatti.lead}</p>
+
+        <ul class="mc-ct-list">
+          {infos.map((it) => (
+            <li data-reveal>
+              {it.href ? (
+                <a href={it.href} class="mc-ct-item" target={it.external ? '_blank' : undefined} rel={it.external ? 'noopener' : undefined}>
+                  <span class="mc-ct-ic"><Icon name={it.icon} size={19} /></span>
+                  <span>
+                    <span class="mc-ct-label">{it.label}</span>
+                    <span class="mc-ct-value">{it.value}</span>
+                  </span>
+                </a>
+              ) : (
+                <div class="mc-ct-item">
+                  <span class="mc-ct-ic"><Icon name={it.icon} size={19} /></span>
+                  <span>
+                    <span class="mc-ct-label">{it.label}</span>
+                    <span class="mc-ct-value">{it.value}</span>
+                  </span>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        <address class="sr-only">
+          84010 Pizzeria, {address.street}, {address.postalCode} {address.city} ({address.province}). Tel. {contact.phone.label}, WhatsApp {contact.whatsapp.label}.
+        </address>
+
+        <a href={address.mapsHref} target="_blank" rel="noopener" class="btn btn-outline mc-ct-route">
+          <span class="btn-label"><Icon name="route" /> Indicazioni stradali</span>
+        </a>
+      </div>
+
+      <div class="mc-ct-map" id="mappa" data-reveal>
+        <MapEmbed />
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .mc-ct {
+    position: relative;
+    padding-block: var(--spacing-section);
+    background: linear-gradient(180deg, rgb(57 34 21 / 0.72), rgb(23 14 9 / 0.85));
+    overflow: hidden;
+    scroll-margin-top: 4.5rem;
+  }
+  .mc-ct::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: var(--copper-line);
+    opacity: 0.4;
+  }
+  /* Vesuvio in filigrana dietro le informazioni */
+  .mc-ct::after {
+    content: '';
+    position: absolute;
+    left: -6rem;
+    bottom: -3rem;
+    width: 40rem;
+    height: 14rem;
+    opacity: 0.07;
+    background: var(--color-copper-light);
+    -webkit-mask: url('/img/vesuvio-mask.svg') no-repeat center / contain;
+    mask: url('/img/vesuvio-mask.svg') no-repeat center / contain;
+    pointer-events: none;
+  }
+  .mc-ct-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 3.5rem;
+  }
+  @media (min-width: 1024px) {
+    .mc-ct-grid { grid-template-columns: 0.95fr 1.05fr; gap: 4.5rem; align-items: start; }
+  }
+  .mc-ct-lead {
+    margin-top: 1.25rem;
+    max-width: 44ch;
+    font-weight: 300;
+    opacity: 0.9;
+  }
+  .mc-ct-list {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .mc-ct-list { grid-template-columns: 1fr 1fr; }
+  }
+  .mc-ct-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgb(246 183 101 / 0.2);
+    background: rgb(22 14 9 / 0.35);
+    transition: background-color 0.35s ease, border-color 0.35s ease, transform 0.4s var(--ease-out);
+  }
+  a.mc-ct-item:hover {
+    background: rgb(121 78 49 / 0.22);
+    border-color: rgb(246 183 101 / 0.5);
+    transform: translateX(4px);
+  }
+  .mc-ct-ic {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: rgb(246 183 101 / 0.12);
+    color: var(--color-copper-light);
+    transition: background 0.35s ease, color 0.35s ease;
+  }
+  a.mc-ct-item:hover .mc-ct-ic { background: var(--color-cognac); color: var(--color-sand); }
+  .mc-ct-label {
+    display: block;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+  }
+  .mc-ct-value {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+  .mc-ct-route { margin-top: 1.75rem; }
+
+  /* Mappa: alta quanto la colonna dei recapiti su desktop */
+  .mc-ct-map {
+    scroll-margin-top: 5.5rem;
+    display: flex;
+    min-height: 26rem;
+  }
+  @media (min-width: 1024px) {
+    .mc-ct-map { align-self: stretch; min-height: 34rem; }
+  }
+</style>

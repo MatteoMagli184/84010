@@ -1,0 +1,60 @@
+---
+/** Pagine interne (privacy, cookie, 404): testata sobria + testo leggibile. */
+import Base from './Base.astro';
+import Container from '@/components/ui/Container.astro';
+
+interface Props {
+  title: string;
+  kicker?: string;
+  description?: string;
+  noindex?: boolean;
+  updated?: string;
+}
+const { title, kicker, description, noindex = false, updated } = Astro.props;
+---
+<Base title={title} description={description} noindex={noindex}>
+  <section class="mc-page-head">
+    <Container>
+      {kicker && <p class="kicker">{kicker}</p>}
+      <h1 class="mc-page-title">{title}</h1>
+      {updated && <p class="mc-page-updated">Ultimo aggiornamento: {updated}</p>}
+    </Container>
+  </section>
+  <Container>
+    <div class="mc-prose">
+      <slot />
+    </div>
+  </Container>
+</Base>
+
+<style>
+  .mc-page-head {
+    padding: 10rem 0 3rem;
+    border-bottom: 1px solid var(--color-line);
+    margin-bottom: 3rem;
+  }
+  .mc-page-title {
+    margin-top: 0.9rem;
+    font-size: var(--text-display);
+    font-weight: 400;
+    line-height: 1.06;
+  }
+  .mc-page-updated { margin-top: 1rem; font-size: 0.85rem; color: var(--color-muted); }
+  .mc-prose {
+    max-width: 46rem;
+    padding-bottom: var(--spacing-section);
+    color: var(--color-sand);
+    font-weight: 300;
+  }
+  .mc-prose :global(h2) {
+    margin: 2.5rem 0 0.75rem;
+    font-size: 1.75rem;
+    color: var(--color-copper-light);
+  }
+  .mc-prose :global(p),
+  .mc-prose :global(ul) { margin-bottom: 1rem; }
+  .mc-prose :global(ul) { padding-left: 1.2rem; list-style: disc; }
+  .mc-prose :global(li) { margin-bottom: 0.35rem; }
+  .mc-prose :global(strong) { font-weight: 600; }
+  .mc-prose :global(a) { color: var(--color-copper-light); text-decoration: underline; text-underline-offset: 3px; }
+</style>

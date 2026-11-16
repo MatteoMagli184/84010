@@ -1,0 +1,121 @@
+---
+/** Chi siamo (About di mc8): testo del cliente + nicchia ad arco del moodboard. */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import DepthCarousel from '../DepthCarousel.astro';
+import { photos } from '@/data/photos';
+import { about } from '@/data/content';
+import { rich } from '@/lib/rich';
+
+const [first, ...rest] = about.body;
+// Carosello in profondità (DepthCarousel di mc8)
+const gallery = [photos.impastoFarina, photos.pizzaInSala, photos.vesuvioGolfo, photos.margheritaPiatto, photos.salaApplique, photos.fornoCupola];
+---
+<Section id="chi-siamo" label="Chi siamo">
+  <Container>
+    <div class="mc-about">
+      <div class="mc-about-text">
+        <p class="kicker">{about.kicker}</p>
+        <h2 class="section-title" set:html={rich(about.title)} />
+        <p class="mc-about-lead" data-stagger>{first}</p>
+        <div class="mc-about-body" data-reveal>
+          {rest.map((p) => <p>{p}</p>)}
+        </div>
+        <p class="mc-about-sign" data-reveal>{about.sign}</p>
+        <ul class="mc-values" data-reveal>
+          {about.values.map((v) => <li>{v}</li>)}
+        </ul>
+      </div>
+
+      <div class="mc-about-media" data-reveal>
+        <DepthCarousel images={gallery} label="Foto della pizzeria" prevLabel="Foto precedente" nextLabel="Foto successiva" cardWidth={290} cardHeight={390} />
+        <p class="mc-about-niche"><strong class="copper">{about.niche.title}</strong> {about.niche.text}</p>
+      </div>
+    </div>
+  </Container>
+</Section>
+
+<style>
+  .mc-about {
+    display: grid;
+    gap: 3.5rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .mc-about { grid-template-columns: 1.1fr 0.9fr; gap: 5rem; }
+  }
+  .mc-about-lead {
+    position: relative;
+    margin-top: 2.25rem;
+    padding-left: 1.75rem;
+    border-left: 1px solid rgb(246 183 101 / 0.45);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.3rem, 2.1vw, 1.6rem);
+    line-height: 1.5;
+    color: var(--color-sand);
+  }
+  .mc-about-body {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    max-width: 58ch;
+    font-size: 1.02rem;
+    line-height: 1.85;
+    color: var(--color-muted);
+    font-weight: 300;
+  }
+  .mc-about-sign {
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.3rem;
+    line-height: 1.45;
+    color: var(--color-copper-light);
+  }
+  .mc-values {
+    margin-top: 2.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.1rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .mc-values li {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.1rem;
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-sand);
+  }
+  .mc-values li + li::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    transform: rotate(45deg);
+    background: var(--color-copper);
+  }
+  .mc-about-media {
+    width: 100%;
+    min-height: 30rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .mc-about-media :global(.depthc) { flex: 1 1 auto; min-height: 30rem; }
+  @media (max-width: 639px) {
+    .mc-about-media, .mc-about-media :global(.depthc) { min-height: 25rem; }
+  }
+  .mc-about-niche {
+    margin-top: 0.5rem;
+    text-align: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--color-muted);
+  }
+  .mc-about-niche strong { font-style: normal; font-size: 1.3rem; margin-right: 0.35rem; }
+</style>

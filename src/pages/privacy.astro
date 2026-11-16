@@ -1,0 +1,50 @@
+---
+import Page from '@/layouts/Page.astro';
+import { address, contact, legal, site } from '@/data/site';
+const vat = legal.vat ? `, P.IVA ${legal.vat}` : '';
+---
+<!-- DA CONFERMARE con il cliente: ragione sociale esatta, sede legale e P.IVA (vedi README) -->
+<Page
+  title="Informativa privacy"
+  kicker="Privacy"
+  description={`Informativa sul trattamento dei dati personali del sito ${site.name}, pizzeria a Bologna.`}
+  updated="16 novembre 2026"
+>
+  <p>
+    Questa informativa descrive come vengono trattati i dati personali di chi visita il sito, ai sensi del
+    Regolamento (UE) 2016/679 (GDPR).
+  </p>
+  <h2>Titolare del trattamento</h2>
+  <p>
+    {legal.company}{vat} — {address.street}, {address.postalCode} {address.city} ({address.province}).<br />
+    Telefono: <a href={contact.phone.href}>{contact.phone.label}</a> — WhatsApp: <a href={contact.whatsapp.href}>{contact.whatsapp.label}</a>
+    {contact.email && <Fragment> — Email: <a href={`mailto:${contact.email}`}>{contact.email}</a></Fragment>}
+  </p>
+  <h2>Dati raccolti e finalità</h2>
+  <ul>
+    <li>
+      <strong>Prenotazioni</strong>: il sito non raccoglie dati con moduli. I pulsanti «Prenota» aprono WhatsApp con un
+      messaggio già pronto: sei tu a decidere se inviarlo. I dati che ci scrivi (nome, giorno, orario, numero di persone,
+      note) li usiamo solo per gestire la prenotazione. Base giuridica: esecuzione di misure
+      richieste dall'interessato (art. 6.1.b GDPR).
+    </li>
+    <li><strong>Contatti diretti</strong> (telefono, WhatsApp, social): i dati che ci comunichi vengono usati per rispondere alla tua richiesta.</li>
+    <li><strong>Dati tecnici di navigazione</strong>: il server che ospita il sito registra in modo automatico dati tecnici (indirizzo IP, browser, pagine richieste) necessari al funzionamento e alla sicurezza.</li>
+  </ul>
+  <h2>Chi tratta i dati</h2>
+  <ul>
+    <li><strong>Netlify, Inc.</strong> — hosting del sito.</li>
+    <li><strong>WhatsApp (Meta Platforms Ireland Ltd.)</strong> — solo se scegli di scriverci su WhatsApp, secondo l'informativa del servizio.</li>
+    <li><strong>Google Maps (Google Ireland Ltd.)</strong> — la mappa nella sezione contatti è fornita da Google, che riceve l'indirizzo IP del visitatore e può usare propri cookie secondo la sua informativa (<a href="https://policies.google.com/privacy" rel="noopener" target="_blank">policies.google.com</a>).</li>
+  </ul>
+  <h2>Conservazione</h2>
+  <p>I dati delle prenotazioni sono conservati per il tempo necessario a gestirle.</p>
+  <h2>Cookie</h2>
+  <p>Il sito non usa cookie di profilazione né strumenti di statistica di terze parti. I dettagli sono nella <a href="/cookie/">cookie policy</a>.</p>
+  <h2>I tuoi diritti</h2>
+  <p>
+    Puoi chiedere in qualsiasi momento accesso, rettifica, cancellazione, limitazione od opposizione al trattamento, e la
+    portabilità dei dati, contattandoci ai recapiti indicati sopra. Hai inoltre diritto di proporre reclamo al Garante per
+    la protezione dei dati personali (<a href="https://www.garanteprivacy.it" rel="noopener" target="_blank">garanteprivacy.it</a>).
+  </p>
+</Page>

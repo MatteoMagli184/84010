@@ -1,0 +1,28 @@
+---
+/**
+ * Logo ufficiale 84010 Pizzeria (PNG rame su trasparente, fornito dal cliente),
+ * servito da astro:assets in WebP alla dimensione giusta.
+ */
+import { Image } from 'astro:assets';
+import logo from '@/assets/brand/logo-84010.png';
+
+interface Props {
+  /** Larghezza in rem. */
+  width?: number;
+  class?: string;
+  eager?: boolean;
+  alt?: string;
+}
+const { width = 8, class: cls = '', eager = false, alt = '84010 Pizzeria' } = Astro.props;
+const px = Math.round(width * 16);
+---
+<Image
+  src={logo}
+  alt={alt}
+  widths={[...new Set([Math.min(px, logo.width), Math.min(px * 2, logo.width)])]}
+  sizes={`${px}px`}
+  quality={90}
+  loading={eager ? 'eager' : 'lazy'}
+  class:list={['logo-84010', cls]}
+  style={`width:${width}rem;height:auto`}
+/>

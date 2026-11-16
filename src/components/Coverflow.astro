@@ -1,0 +1,82 @@
+---
+/**
+ * Coverflow «inverted perspective» con Swiper, come l'anteprima progetti di
+ * clstudiomilano. Ogni foto apre il profilo Instagram.
+ */
+import { Image } from 'astro:assets';
+import type { Photo } from '@/data/photos';
+
+interface Props {
+  photos: Photo[];
+  href: string;
+  label: string;
+  openLabel: string;
+}
+const { photos, href, label, openLabel } = Astro.props;
+---
+<div class="swiper mc-coverflow" data-coverflow role="group" aria-label={label}>
+  <div class="swiper-wrapper">
+    {photos.map((p) => (
+      <div class="swiper-slide">
+        <a href={href} target="_blank" rel="noopener" class="mc-cf-slide" aria-label={`${p.alt} — ${openLabel}`}>
+          <Image src={p.src} alt={p.alt} widths={[320, 480, 720]} sizes="(min-width: 768px) 340px, 62vw" class="mc-cf-img" />
+        </a>
+      </div>
+    ))}
+  </div>
+  <div class="swiper-pagination"></div>
+</div>
+
+<style is:global>
+  .mc-coverflow {
+    width: 100%;
+    padding-bottom: 3.25rem !important;
+    overflow: hidden;
+  }
+  .mc-coverflow .swiper-slide {
+    width: clamp(13rem, 30vw, 20rem);
+    aspect-ratio: 4 / 5;
+  }
+  .mc-cf-slide,
+  .mc-cf-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .mc-cf-img { object-fit: cover; border-radius: 0.9rem; }
+  .mc-coverflow .swiper-slide { border-radius: 0.9rem; }
+  .mc-coverflow .swiper-slide-shadow-left, .mc-coverflow .swiper-slide-shadow-right { border-radius: 0.9rem; }
+  .mc-coverflow .swiper-pagination-bullet {
+    background: var(--color-sand);
+    opacity: 0.3;
+  }
+  .mc-coverflow .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: var(--color-copper-light);
+  }
+</style>
+
+<script>
+  import Swiper from 'swiper';
+  import { EffectCoverflow, Pagination, Autoplay, Keyboard } from 'swiper/modules';
+  import 'swiper/css';
+  import 'swiper/css/effect-coverflow';
+  import 'swiper/css/pagination';
+
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-coverflow]').forEach((el) => {
+    new Swiper(el, {
+      modules: [EffectCoverflow, Pagination, Autoplay, Keyboard],
+      effect: 'coverflow',
+      grabCursor: true,
+      centeredSlides: true,
+      slidesPerView: 'auto',
+      loop: true,
+      keyboard: { enabled: true, onlyInViewport: true },
+      coverflowEffect: { rotate: 38, stretch: 0, depth: 110, modifier: 1, slideShadows: true },
+      pagination: { el: el.querySelector<HTMLElement>('.swiper-pagination')!, clickable: true },
+      autoplay: reduce ? false : { delay: 3200, disableOnInteraction: true, pauseOnMouseEnter: true },
+    });
+  });
+</script>

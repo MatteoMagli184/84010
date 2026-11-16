@@ -1,0 +1,24 @@
+---
+import Base from '@/layouts/Base.astro';
+import Hero from '@/components/Hero.astro';
+import ChiSiamo from '@/components/sections/ChiSiamo.astro';
+import Famiglia from '@/components/sections/Famiglia.astro';
+import LaPizza from '@/components/sections/LaPizza.astro';
+import Galleria from '@/components/sections/Galleria.astro';
+import Seguici from '@/components/sections/Seguici.astro';
+import Faq from '@/components/sections/Faq.astro';
+import PrenotaBand from '@/components/sections/PrenotaBand.astro';
+import Contatti from '@/components/sections/Contatti.astro';
+import { homeJsonLd } from '@/lib/seo';
+---
+<Base home jsonLd={homeJsonLd()}>
+  <Hero />
+  <ChiSiamo />
+  <Famiglia />
+  <LaPizza />
+  <Galleria />
+  <Seguici />
+  <Faq />
+  <PrenotaBand />
+  <Contatti />
+</Base>

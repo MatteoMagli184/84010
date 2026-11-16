@@ -1,0 +1,27 @@
+---
+import Page from '@/layouts/Page.astro';
+import { site } from '@/data/site';
+---
+<Page
+  title="Cookie policy"
+  kicker="Cookie"
+  description={`Cookie policy del sito ${site.name}: nessun cookie di profilazione.`}
+  updated="16 novembre 2026"
+>
+  <p>
+    Questo sito non installa cookie propri e non usa strumenti di statistica o di marketing.
+  </p>
+  <h2>Mappa di Google</h2>
+  <p>
+    Nella sezione contatti è incorporata una mappa di Google Maps, caricata quando arrivi in fondo alla pagina. Google
+    può impostare i propri cookie secondo la sua <a href="https://policies.google.com/technologies/cookies" rel="noopener" target="_blank">policy sui cookie</a>.
+  </p>
+  <h2>Link esterni</h2>
+  <p>
+    I pulsanti verso WhatsApp, Facebook e Instagram aprono servizi esterni, che possono usare i propri cookie secondo le
+    rispettive informative. Questi servizi non vengono caricati finché non clicchi il link.
+  </p>
+  <h2>Come gestire i cookie</h2>
+  <p>Puoi in ogni momento cancellare o bloccare i cookie dalle impostazioni del tuo browser.</p>
+  <p>Per il resto vedi l'<a href="/privacy/">informativa privacy</a>.</p>
+</Page>

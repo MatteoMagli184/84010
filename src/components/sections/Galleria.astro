@@ -1,0 +1,321 @@
+---
+/**
+ * Galleria (sezione «Lavori» di mc8): card con foto che si scopre a tendina,
+ * zoom lento al passaggio e lightbox con titolo e descrizione, frecce,
+ * tastiera e swipe. Le foto sono dimostrative (vedi src/data/photos.ts).
+ */
+import { Image, getImage } from 'astro:assets';
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Icon from '../ui/Icon.astro';
+import { galleria } from '@/data/content';
+import { rich } from '@/lib/rich';
+
+const lavori = galleria;
+const ui = {
+  zoom: 'Ingrandisci',
+  workPhoto: 'Foto della galleria',
+  close: 'Chiudi',
+  prevWork: 'Foto precedente',
+  nextWork: 'Foto successiva',
+};
+
+const full = await Promise.all(
+  lavori.projects.map(async (p) => {
+    const img = await getImage({ src: p.cover.src, width: 1600, format: 'webp', quality: 82 });
+    return { src: img.src, alt: p.cover.alt, title: p.title, body: p.body };
+  }),
+);
+---
+<Section id="galleria" tone="alt" label="Galleria">
+  <Container>
+    <div class="mc-lv-head">
+      <p class="kicker">{lavori.kicker}</p>
+      <h2 class="section-title" set:html={rich(lavori.title)} />
+    </div>
+
+    <ul class="mc-lv-grid">
+      {lavori.projects.map((p, i) => (
+        <li class="mc-lv-card">
+          <button type="button" class="mc-lv-open" data-lv-open={i} aria-label={`${ui.zoom}: ${p.title}`}>
+            <span class="mc-lv-media" data-curtain style={`transition-delay:${i * 0.1}s`}>
+              <Image
+                src={p.cover.src}
+                alt={p.cover.alt}
+                widths={[400, 640, 900]}
+                sizes="(min-width: 1024px) 360px, (min-width: 640px) 46vw, 92vw"
+                quality={78}
+                class="mc-lv-img"
+                style={`object-position:${p.cover.pos ?? '50% 50%'}`}
+              />
+              <span class="mc-lv-zoom" aria-hidden="true"><Icon name="plus" size={20} stroke={1.5} /></span>
+            </span>
+          </button>
+          <div class="mc-lv-text">
+            <span class="mc-lv-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="mc-lv-card-title">{p.title}</h3>
+            <p class="mc-lv-body">{p.body}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </Container>
+</Section>
+
+<script type="application/json" data-lv-data is:inline set:html={JSON.stringify(full)}></script>
+
+<div class="mc-lb" data-lightbox aria-hidden="true" role="dialog" aria-modal="true" aria-label={ui.workPhoto}>
+  <button type="button" class="mc-lb-close" data-lb-close aria-label={ui.close}>
+    <Icon name="close" size={24} stroke={1.4} />
+  </button>
+  <button type="button" class="mc-lb-nav mc-lb-prev" data-lb-prev aria-label={ui.prevWork}>
+    <Icon name="chevronLeft" size={28} stroke={1.4} />
+  </button>
+  <figure class="mc-lb-figure">
+    <img data-lb-img alt="" />
+    <figcaption class="mc-lb-caption">
+      <span class="mc-lb-count" data-lb-count></span>
+      <strong class="mc-lb-title" data-lb-title></strong>
+      <span class="mc-lb-body" data-lb-body></span>
+    </figcaption>
+  </figure>
+  <button type="button" class="mc-lb-nav mc-lb-next" data-lb-next aria-label={ui.nextWork}>
+    <Icon name="chevronRight" size={28} stroke={1.4} />
+  </button>
+</div>
+
+<style>
+  .mc-lv-head { max-width: 40rem; }
+  .mc-lv-grid {
+    margin-top: 3.5rem;
+    display: grid;
+    gap: 3rem 1.75rem;
+  }
+  @media (min-width: 640px) {
+    .mc-lv-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .mc-lv-grid { grid-template-columns: repeat(3, 1fr); }
+    .mc-lv-card:nth-child(3n + 2) { margin-top: 3rem; }
+  }
+  .mc-lv-open {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+  .mc-lv-media {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--color-coal);
+    box-shadow: 0 30px 60px -35px rgb(0 0 0 / 0.9), 0 0 0 1px rgb(246 183 101 / 0.12);
+  }
+  .mc-lv-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* zoom lento al passaggio (sul wrapper, per non litigare con la tendina) */
+  .mc-lv-media :global(picture),
+  .mc-lv-media .mc-lv-img {
+    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease !important;
+  }
+  .mc-lv-open:hover .mc-lv-img,
+  .mc-lv-open:focus-visible .mc-lv-img {
+    transform: scale(1.06) !important;
+  }
+  .mc-lv-zoom {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #f6b765, #be6f29);
+    color: #1a0f08;
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+    transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .mc-lv-open:hover .mc-lv-zoom,
+  .mc-lv-open:focus-visible .mc-lv-zoom {
+    opacity: 1;
+    transform: none;
+  }
+  @media (hover: none) {
+    .mc-lv-zoom { opacity: 0.92; transform: none; }
+  }
+  .mc-lv-text { margin-top: 1.5rem; }
+  .mc-lv-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--color-copper-light);
+  }
+  .mc-lv-card-title {
+    margin-top: 0.25rem;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    color: var(--color-sand);
+  }
+  .mc-lv-body {
+    margin-top: 0.75rem;
+    font-size: 0.97rem;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+
+  /* ---- lightbox ---- */
+  .mc-lb {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: clamp(1rem, 4vw, 3rem);
+    background: rgb(20 13 9 / 0.96);
+    color: var(--color-sand);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease, visibility 0.35s;
+  }
+  .mc-lb[data-open] { opacity: 1; visibility: visible; }
+  .mc-lb-figure {
+    margin: 0;
+    max-width: min(100%, 1400px);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .mc-lb-figure img {
+    max-width: 100%;
+    max-height: 72vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0.6rem;
+  }
+  .mc-lb-caption {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 62ch;
+    text-align: center;
+  }
+  .mc-lb-count { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.22em; opacity: 0.6; }
+  .mc-lb-title { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; color: var(--color-copper-light); }
+  .mc-lb-body { font-size: 0.9rem; opacity: 0.75; }
+  .mc-lb-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    padding: 0.5rem;
+    color: inherit;
+    cursor: pointer;
+  }
+  .mc-lb-nav {
+    flex: 0 0 auto;
+    padding: 0.5rem;
+    color: inherit;
+    opacity: 0.75;
+    cursor: pointer;
+    transition: opacity 0.25s ease;
+  }
+  .mc-lb-nav:hover { opacity: 1; }
+  @media (max-width: 640px) {
+    .mc-lb-nav { position: absolute; bottom: 1rem; }
+    .mc-lb-prev { left: 20%; }
+    .mc-lb-next { right: 20%; }
+    .mc-lb-body { display: none; }
+    .mc-lb-figure img { max-height: 68vh; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mc-lv-zoom, .mc-lb { transition: none; }
+  }
+</style>
+
+<script>
+  const data: { src: string; alt: string; title: string; body: string }[] = JSON.parse(
+    document.querySelector('[data-lv-data]')?.textContent || '[]',
+  );
+  const lb = document.querySelector<HTMLElement>('[data-lightbox]');
+  if (lb && data.length) {
+    const img = lb.querySelector<HTMLImageElement>('[data-lb-img]')!;
+    const count = lb.querySelector<HTMLElement>('[data-lb-count]')!;
+    const title = lb.querySelector<HTMLElement>('[data-lb-title]')!;
+    const body = lb.querySelector<HTMLElement>('[data-lb-body]')!;
+    const closeBtn = lb.querySelector<HTMLButtonElement>('[data-lb-close]')!;
+    const prevBtn = lb.querySelector<HTMLButtonElement>('[data-lb-prev]')!;
+    const nextBtn = lb.querySelector<HTMLButtonElement>('[data-lb-next]')!;
+    const lenis = () => (window as unknown as { lenis?: { stop(): void; start(): void } }).lenis;
+    let cur = 0;
+    let lastFocus: HTMLElement | null = null;
+
+    const show = (n: number) => {
+      cur = (n + data.length) % data.length;
+      img.src = data[cur].src;
+      img.alt = data[cur].alt;
+      count.textContent = `${String(cur + 1).padStart(2, '0')} / ${String(data.length).padStart(2, '0')}`;
+      title.textContent = data[cur].title;
+      body.textContent = data[cur].body;
+    };
+    const open = (n: number) => {
+      lastFocus = document.activeElement as HTMLElement;
+      show(n);
+      lb.setAttribute('data-open', '');
+      lb.setAttribute('aria-hidden', 'false');
+      document.documentElement.style.overflow = 'hidden';
+      lenis()?.stop();
+      closeBtn.focus();
+    };
+    const close = () => {
+      lb.removeAttribute('data-open');
+      lb.setAttribute('aria-hidden', 'true');
+      document.documentElement.style.overflow = '';
+      lenis()?.start();
+      lastFocus?.focus();
+    };
+
+    document.querySelectorAll<HTMLButtonElement>('[data-lv-open]').forEach((b) => {
+      b.addEventListener('click', () => open(Number(b.dataset.lvOpen) || 0));
+    });
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', () => show(cur - 1));
+    nextBtn.addEventListener('click', () => show(cur + 1));
+    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+    document.addEventListener('keydown', (e) => {
+      if (lb.getAttribute('aria-hidden') === 'true') return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') show(cur - 1);
+      else if (e.key === 'ArrowRight') show(cur + 1);
+      else if (e.key === 'Tab') {
+        const f = [closeBtn, prevBtn, nextBtn];
+        const idx = f.indexOf(document.activeElement as HTMLButtonElement);
+        e.preventDefault();
+        f[(idx + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+      }
+    });
+    // Swipe orizzontale sul telefono
+    let x0: number | null = null;
+    lb.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+    lb.addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+      x0 = null;
+    });
+  }
+</script>

@@ -1,0 +1,217 @@
+---
+import '@/styles/global.css';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import MobileBar from '@/components/MobileBar.astro';
+import { site, address } from '@/data/site';
+import { meta } from '@/data/content';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  home?: boolean;
+  /** JSON-LD della pagina (la home passa Restaurant + FAQ). */
+  jsonLd?: object;
+}
+const { title, noindex = false, home = false, jsonLd } = Astro.props;
+const description = Astro.props.description ?? meta.description;
+const fullTitle = title ? `${title} | ${site.name}` : meta.title;
+const url = new URL(Astro.url.pathname, site.url).href;
+const ogUrl = `${site.url}/og-84010.jpg`;
+---
+<!doctype html>
+<html lang="it-IT">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {home && <meta name="keywords" content={meta.keywords.join(', ')} />}
+    <link rel="canonical" href={url} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
+    <meta name="theme-color" content="#160e09" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="author" content={site.name} />
+
+    <!-- SEO locale -->
+    <meta name="geo.region" content="IT-BO" />
+    <meta name="geo.placename" content={address.city} />
+    {address.geo && <meta name="geo.position" content={`${address.geo.lat};${address.geo.lng}`} />}
+    {address.geo && <meta name="ICBM" content={`${address.geo.lat}, ${address.geo.lng}`} />}
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content={home ? 'restaurant.restaurant' : 'website'} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Logo 84010 Pizzeria in rame su pietra scura" />
+    {home && <meta property="restaurant:contact_info:street_address" content={address.street} />}
+    {home && <meta property="restaurant:contact_info:locality" content={address.city} />}
+    {home && <meta property="restaurant:contact_info:postal_code" content={address.postalCode} />}
+    {home && <meta property="restaurant:contact_info:country_name" content="Italia" />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" as="image" href="/img/carta-stropicciata-m.webp" type="image/webp" media="(max-width: 899px)" />
+    <link rel="preload" as="image" href="/img/carta-stropicciata.webp" type="image/webp" media="(min-width: 900px)" />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />}
+
+    <script is:inline>
+      document.documentElement.classList.add('js-reveal');
+      setTimeout(() => document.documentElement.classList.add('reveal-timeout'), 2500);
+    </script>
+  </head>
+
+  <body>
+    <a
+      href="#contenuto"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-copper focus:px-4 focus:py-2 focus:text-night"
+    >
+      Vai al contenuto
+    </a>
+
+    <Header home={home} />
+    <main id="contenuto">
+      <slot />
+    </main>
+    <Footer home={home} />
+    <MobileBar />
+
+    <script>
+      import Lenis from 'lenis';
+
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const hasIO = 'IntersectionObserver' in window;
+
+      // --- 0. Smooth scroll (Lenis) -----------------------------------------
+      // Le ancore della one-page scorrono con la stessa inerzia; con il movimento
+      // ridotto resta lo scroll nativo.
+      if (!reduce) {
+        const lenis = new Lenis({
+          lerp: 0.1,
+          // Le sezioni hanno già il loro respiro in alto; l'header scendendo si nasconde.
+          anchors: true,
+          autoRaf: true,
+        });
+        (window as unknown as { lenis: Lenis }).lenis = lenis;
+      }
+
+      // --- 1. Reveal opacità e «tendina» sulle foto ------------------------
+      const revealEls = document.querySelectorAll('[data-reveal], [data-curtain]');
+      if (hasIO && revealEls.length) {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-visible');
+                obs.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.06 },
+        );
+        revealEls.forEach((el) => io.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add('is-visible'));
+      }
+
+      // --- 2. Stagger text: titoli e paragrafi del contenuto ---------------
+      // Ogni parola dentro una maschera, l'interno sale in sequenza (da clstudiomilano).
+      // Esclusi: titolo hero (ha StrokeText), form e lightbox.
+      const SKIP = (el: Element) =>
+        el.closest('form, [data-lightbox], [data-no-stagger], .swiper') !== null ||
+        (el as HTMLElement).dataset.staggered === 'true';
+
+      const makeUnit = (counter: { n: number }) => {
+        const mask = document.createElement('span');
+        mask.className = 'mc-w';
+        const inner = document.createElement('span');
+        inner.className = 'mc-wi';
+        inner.style.setProperty('--wi', String(Math.min(counter.n++, 40)));
+        mask.appendChild(inner);
+        return { mask, inner };
+      };
+
+      const wrapWords = (text: string, frag: DocumentFragment, counter: { n: number }) => {
+        for (const part of text.split(/(\s+)/)) {
+          if (part === '') continue;
+          if (/^\s+$/.test(part)) {
+            frag.appendChild(document.createTextNode(' '));
+            continue;
+          }
+          const { mask, inner } = makeUnit(counter);
+          inner.textContent = part;
+          frag.appendChild(mask);
+        }
+      };
+
+      const splitElement = (el: HTMLElement) => {
+        const counter = { n: 0 };
+        const frag = document.createDocumentFragment();
+        for (const node of Array.from(el.childNodes)) {
+          if (node.nodeType === Node.TEXT_NODE) {
+            wrapWords(node.textContent || '', frag, counter);
+          } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const child = node as HTMLElement;
+            if (child.tagName === 'BR') {
+              frag.appendChild(child.cloneNode());
+            } else {
+              // Elemento inline (link, em, span): un'unica unità animata.
+              const { mask, inner } = makeUnit(counter);
+              inner.appendChild(child.cloneNode(true));
+              frag.appendChild(mask);
+            }
+          }
+        }
+        el.textContent = '';
+        el.appendChild(frag);
+        el.classList.add('mc-stagger');
+        el.dataset.staggered = 'true';
+      };
+
+      if (!reduce) {
+        const targets = Array.from(
+          document.querySelectorAll<HTMLElement>('main :is(h1, h2, h3, p)[data-stagger], main :is(h2, h3)'),
+        ).filter((el, i, arr) => arr.indexOf(el) === i && !SKIP(el) && (el.textContent || '').trim().length > 0);
+
+        targets.forEach(splitElement);
+
+        if (hasIO) {
+          const sio = new IntersectionObserver(
+            (entries, obs) => {
+              for (const e of entries) {
+                if (e.isIntersecting) {
+                  e.target.classList.add('is-in');
+                  obs.unobserve(e.target);
+                }
+              }
+            },
+            { rootMargin: '0px 0px -8% 0px', threshold: 0.1 },
+          );
+          targets.forEach((el) => sio.observe(el));
+        } else {
+          targets.forEach((el) => el.classList.add('is-in'));
+        }
+        // Rete di sicurezza: nessun testo resta nascosto se l'observer non risponde.
+        setTimeout(() => {
+          targets.forEach((el) => {
+            if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('is-in');
+          });
+        }, 2500);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+---
+interface Props {
+  id?: string;
+  tight?: boolean;
+  /** base = trasparente sulla carta; alt = velo oliva; deep = quasi nero */
+  tone?: 'base' | 'alt' | 'deep';
+  class?: string;
+  label?: string;
+}
+const { id, tight = false, tone = 'base', class: cls = '', label } = Astro.props;
+const py = tight ? 'py-section-sm' : 'py-section';
+---
+<section id={id} class:list={['mc-section', `mc-section--${tone}`, py, cls]} aria-label={label}>
+  <slot />
+</section>
+
+<style>
+  .mc-section { position: relative; scroll-margin-top: 4.5rem; }
+  /* oliva del moodboard */
+  .mc-section--alt { background: linear-gradient(180deg, rgb(48 43 31 / 0.78), rgb(48 43 31 / 0.6)); }
+  /* espresso del moodboard */
+  .mc-section--deep { background: linear-gradient(180deg, rgb(57 34 21 / 0.78), rgb(42 25 16 / 0.85)); }
+  /* filetto ramato tra una sezione e l'altra */
+  .mc-section--alt::before,
+  .mc-section--deep::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: var(--copper-line);
+    opacity: 0.35;
+  }
+</style>

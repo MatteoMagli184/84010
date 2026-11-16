@@ -1,0 +1,443 @@
+@import 'tailwindcss';
+
+/* Font self-hosted (niente Google Fonts a runtime): solo i pesi usati, solo latin.
+   Playfair Display = i titoli serif delle grafiche («Seguici su», «Per info e prenotazioni»);
+   Montserrat = le etichette sans («Facebook e Instagram», «Ci trovi in»). */
+@import '@fontsource/playfair-display/latin-400.css';
+@import '@fontsource/playfair-display/latin-400-italic.css';
+@import '@fontsource/playfair-display/latin-700.css';
+@import '@fontsource/montserrat/latin-300.css';
+@import '@fontsource/montserrat/latin-400.css';
+@import '@fontsource/montserrat/latin-600.css';
+
+/* ---------------------------------------------------------------------------
+   DESIGN TOKEN — palette «Moodboard 40010 · Stile moderno Vesuvio»
+   I cinque campioni del moodboard guidano tutto il sito:
+     oliva  #302b1f → sezioni alternate          espresso #392215 → fondi, contatti
+     tortora #a38d79 → testi secondari, filetti   cuoio   #794e31 → bottoni (velluto)
+     ruggine #642216 → bagliori, hover, accenti
+   Il rame del logo resta solo per le parole in corsivo e i numeri.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-night: #160e09; /* fondo: espresso quasi nero */
+  --color-coal: #1e140d;
+  --color-olive: #302b1f; /* moodboard 1 — verde oliva scuro */
+  --color-espresso: #392215; /* moodboard 2 — marrone espresso */
+  --color-taupe: #a38d79; /* moodboard 3 — pietra/tortora */
+  --color-cognac: #794e31; /* moodboard 4 — cuoio/velluto */
+  --color-rust: #642216; /* moodboard 5 — rosso ruggine */
+  --color-sand: #eee5d8; /* intonaco del moodboard: testo chiaro */
+  --color-stone: #e6dccf; /* card chiara (form) */
+  --color-muted: #bfb0a0; /* tortora schiarito */
+  --color-line: rgb(163 141 121 / 0.24); /* filetti tortora */
+  --color-copper: #be6f29;
+  --color-copper-light: #f6b765;
+  --color-copper-pale: #ffd196;
+  --color-copper-dark: #783b09;
+
+  --font-display: 'Playfair Display', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --text-display: clamp(2.6rem, 6vw, 5rem);
+  --text-display--line-height: 1.04;
+  --text-title: clamp(2.3rem, 4.4vw, 3.7rem);
+  --text-title--line-height: 1.08;
+
+  --spacing-section: 9rem;
+  --spacing-section-sm: 4.5rem;
+}
+
+@layer base {
+  :root {
+    --radius-btn: 999px;
+    --radius-card: 1.1rem;
+    /* Rame spazzolato del logo: luce in alto, ombra in basso */
+    --copper-gradient: linear-gradient(
+      180deg,
+      #ffd196 0%,
+      #f6b765 22%,
+      #be6f29 52%,
+      #944f18 72%,
+      #c98543 100%
+    );
+    --copper-line: linear-gradient(90deg, transparent, #be6f29 15%, #f6b765 50%, #be6f29 85%, transparent);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (max-width: 640px) {
+    :root {
+      --spacing-section: 4.75rem;
+      --spacing-section-sm: 3.5rem;
+    }
+  }
+
+  html {
+    overflow-x: clip;
+    background: var(--color-night);
+    color: var(--color-sand);
+    -webkit-text-size-adjust: 100%;
+  }
+  html:not(.lenis) {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    position: relative;
+    font-variant-numeric: lining-nums;
+    overflow-x: clip;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Sfondo «carta stropicciata»: fisso dietro tutto il sito, scurito e scaldato.
+     Un pseudo-elemento fisso evita i problemi di background-attachment su iOS. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: url('/img/carta-stropicciata-m.webp') center / cover no-repeat;
+    filter: brightness(0.62) sepia(0.25) saturate(1.1);
+  }
+  @media (min-width: 900px) {
+    body::before { background-image: url('/img/carta-stropicciata.webp'); }
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 70% at 50% 0%, transparent 0%, rgb(22 14 9 / 0.55) 70%),
+      linear-gradient(rgb(57 34 21 / 0.28), rgb(22 14 9 / 0.4));
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.012em;
+    font-variant-numeric: lining-nums;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  main { counter-reset: sec; }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: var(--color-cognac);
+    color: var(--color-sand);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-copper-light);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html:not(.lenis) {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Lenis (smooth scroll) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+@layer components {
+  /* Testo in rame spazzolato, come le scritte del logo e delle grafiche.
+     Il gradiente va anche sulle singole parole animate (.mc-wi), che sono
+     trasformate e altrimenti uscirebbero trasparenti. */
+  .copper,
+  .copper .mc-wi {
+    background-image: var(--copper-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .copper.mc-stagger { background-image: none; }
+  .copper strong { color: transparent; }
+
+  /* Occhiello editoriale numerato: «01 ——— Chi siamo» (numerazione automatica) */
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+  }
+  main .kicker::before {
+    order: -2;
+    counter-increment: sec;
+    content: counter(sec, decimal-leading-zero);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-style: italic;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-copper-light);
+  }
+  main .kicker::after {
+    content: '';
+    order: -1;
+    width: 2.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-cognac), rgb(121 78 49 / 0.15));
+  }
+
+  /* Titoli di sezione: serif chiaro, parole chiave in corsivo ramato */
+  .section-title {
+    margin-top: 1.4rem;
+    font-size: var(--text-title);
+    line-height: 1.08;
+    color: var(--color-sand);
+  }
+  .section-title em,
+  .section-title em .mc-wi,
+  .mc-wi em {
+    font-style: italic;
+    background-image: var(--copper-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding-right: 0.06em;
+  }
+
+  /* Testo corrente: misura comoda e tono caldo */
+  .prose-lead {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 2vw, 1.6rem);
+    line-height: 1.5;
+    color: var(--color-sand);
+  }
+
+  /* Bottoni — effetto «Animated Button» (porting CSS puro del componente React/framer-motion):
+     · testo con riflesso che scorre (maschera a gradiente su --mask-x)
+     · filo di luce che percorre il bordo
+     · micro-scala alla molla: 1.01 al passaggio, 0.97 alla pressione
+     Ciclo: 1s di animazione + 1s di pausa, come nell'originale. */
+  .btn,
+  .fx-btn {
+    --shine: rgb(255 232 200 / 0.7);
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.1rem;
+    padding: 0.9rem 2rem;
+    border-radius: var(--radius-btn);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.4s ease,
+      border-color 0.4s ease,
+      box-shadow 0.4s ease;
+  }
+  .btn:hover,
+  .fx-btn:hover { transform: scale(1.01); }
+  .btn:active,
+  .fx-btn:active { transform: scale(0.97); transition-duration: 0.12s; }
+
+  /* testo con riflesso */
+  .btn-label {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    -webkit-mask-image: linear-gradient(-75deg, #000 calc(var(--mask-x) + 20%), rgb(0 0 0 / 0.25) calc(var(--mask-x) + 30%), #000 calc(var(--mask-x) + 100%));
+    mask-image: linear-gradient(-75deg, #000 calc(var(--mask-x) + 20%), rgb(0 0 0 / 0.25) calc(var(--mask-x) + 30%), #000 calc(var(--mask-x) + 100%));
+    animation: btn-text-shine 2s linear infinite;
+  }
+  /* filo di luce sul bordo */
+  .btn::after,
+  .fx-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(-75deg, transparent 30%, var(--shine) 50%, transparent 70%);
+    background-size: 200% 100%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: btn-border-shine 2s linear infinite;
+  }
+  .btn svg,
+  .fx-btn svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: 0 0 auto;
+    transition: transform 0.45s var(--ease-out);
+  }
+  .btn:hover svg.btn-arrow { transform: translateX(4px); }
+
+  /* Primario: velluto color cuoio delle sedute del moodboard */
+  .btn-copper {
+    background: linear-gradient(180deg, #8a5a39 0%, #794e31 55%, #6a3f26 100%);
+    color: var(--color-sand);
+    box-shadow: inset 0 0 0 1px rgb(246 183 101 / 0.28), 0 14px 30px -18px rgb(100 34 22 / 0.9);
+  }
+  .btn-copper:hover {
+    background: linear-gradient(180deg, #7a3a28 0%, #642216 100%);
+    box-shadow: inset 0 0 0 1px rgb(246 183 101 / 0.4), 0 18px 36px -16px rgb(100 34 22 / 0.95);
+  }
+
+  /* Secondari: filetto tortora su vetro scuro */
+  .btn-ghost,
+  .btn-outline {
+    --shine: rgb(239 229 216 / 0.6);
+    border: 1px solid rgb(163 141 121 / 0.5);
+    color: var(--color-sand);
+    background: rgb(22 14 9 / 0.25);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .btn-ghost:hover,
+  .btn-outline:hover {
+    border-color: var(--color-taupe);
+    background: rgb(163 141 121 / 0.12);
+  }
+
+  .link-underline {
+    position: relative;
+    display: inline-block;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.35rem;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .link-underline:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Animated Button: la variabile va registrata per poterla animare */
+@property --mask-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 100%;
+}
+@keyframes btn-text-shine {
+  0% { --mask-x: 100%; }
+  50%, 100% { --mask-x: -100%; }
+}
+@keyframes btn-border-shine {
+  0% { background-position: 100% 0; opacity: 0; }
+  25% { opacity: 1; }
+  50%, 100% { background-position: 0% 0; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-label, .btn::after, .fx-btn::after { animation: none; }
+  .btn::after, .fx-btn::after { opacity: 0; }
+}
+
+/* Reveal all'ingresso in viewport (solo opacità) */
+.js-reveal [data-reveal] {
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-out);
+}
+.js-reveal [data-reveal].is-visible,
+.reveal-timeout [data-reveal] {
+  opacity: 1;
+}
+
+/* Tendina sui riquadri immagine: si scopre dal basso, l'interno rientra da uno zoom */
+.js-reveal [data-curtain] {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1.15s cubic-bezier(0.77, 0, 0.18, 1);
+}
+.js-reveal [data-curtain] > * {
+  transform: scale(1.12);
+  transition: transform 1.6s var(--ease-out);
+}
+.js-reveal [data-curtain].is-visible,
+.reveal-timeout [data-curtain] {
+  clip-path: inset(0 0 0 0);
+}
+.js-reveal [data-curtain].is-visible > *,
+.reveal-timeout [data-curtain] > * {
+  transform: scale(1);
+}
+
+/* Stagger text: ogni parola sale da dietro una maschera (wrapping in Base.astro) */
+.mc-stagger .mc-w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.mc-stagger .mc-wi {
+  display: inline-block;
+  transform: translateY(115%);
+  transition: transform 0.62s var(--ease-out);
+  transition-delay: calc(var(--wi, 0) * 0.04s);
+  will-change: transform;
+}
+.mc-stagger.is-in .mc-wi {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal [data-reveal] { opacity: 1; }
+  .js-reveal [data-curtain] { clip-path: none; }
+  .js-reveal [data-curtain] > * { transform: none; }
+  .mc-stagger .mc-wi { transform: none; transition: none; }
+}

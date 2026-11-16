@@ -1,0 +1,75 @@
+---
+/**
+ * Domande frequenti: testo visibile ricco di parole chiave locali (pizzeria,
+ * pizza napoletana, Bologna, prenotazione) + FAQPage nel JSON-LD della home.
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Icon from '../ui/Icon.astro';
+import { faq } from '@/data/content';
+import { rich } from '@/lib/rich';
+---
+<Section id="domande" label="Domande frequenti">
+  <Container>
+    <div class="mc-faq">
+      <div class="mc-faq-head">
+        <p class="kicker">{faq.kicker}</p>
+        <h2 class="section-title" set:html={rich(faq.title)} />
+      </div>
+      <div class="mc-faq-list" data-no-stagger>
+        {faq.items.map((f, i) => (
+          <details class="mc-faq-item" open={i === 0} data-reveal>
+            <summary>
+              <h3>{f.q}</h3>
+              <span class="mc-faq-ic" aria-hidden="true"><Icon name="plus" size={18} stroke={1.6} /></span>
+            </summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </Container>
+</Section>
+
+<style>
+  .mc-faq { display: grid; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .mc-faq { grid-template-columns: 0.8fr 1.2fr; gap: 4rem; align-items: start; }
+  }
+  .mc-faq-item { border-bottom: 1px solid var(--color-line); }
+  .mc-faq-item:first-child { border-top: 1px solid var(--color-line); }
+  .mc-faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.35rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .mc-faq-item summary::-webkit-details-marker { display: none; }
+  .mc-faq-item h3 {
+    font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+    color: var(--color-sand);
+    transition: color 0.3s ease;
+  }
+  .mc-faq-item summary:hover h3,
+  .mc-faq-item[open] h3 { color: var(--color-copper-light); }
+  .mc-faq-ic {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    border: 1px solid rgb(246 183 101 / 0.3);
+    color: var(--color-copper-light);
+    transition: transform 0.4s var(--ease-out), background 0.3s ease;
+  }
+  .mc-faq-item[open] .mc-faq-ic { transform: rotate(45deg); background: rgb(246 183 101 / 0.12); }
+  .mc-faq-item p {
+    padding: 0 3.5rem 1.5rem 0;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+</style>
