@@ -17,6 +17,7 @@ npm run build    # output in dist/ (deploy Netlify: netlify.toml già pronto)
 | --- | --- |
 | Recapiti, indirizzo, orari, social, dominio | `src/data/site.ts` |
 | Testi delle sezioni, title/description SEO, FAQ | `src/data/content.ts` |
+| Menù (voci, prezzi, note) + poesia | `src/data/menu.ts` — il PDF scaricabile è `public/menu-84010.pdf` (compresso da 9,4 a 1,3 MB) |
 | Palette, font, bottoni, titoli in rame | `src/styles/global.css` |
 | Dati strutturati Google (Restaurant, FAQ…) | `src/lib/seo.ts` |
 | Riquadri «foto» disegnati (Vesuvio, nicchia, forno, candela) | `src/components/Scene.astro` |
@@ -28,6 +29,8 @@ Nei titoli le parole tra `*asterischi*` escono in grassetto ramato
 
 - [ ] **Dominio** definitivo → `src/data/site.ts`, `astro.config.mjs`, `public/robots.txt`
 - [ ] **Link Facebook e Instagram** (ora sono segnaposto: `pizzeria84010`) → `src/data/site.ts`
+- [ ] **Link diretti Just Eat, Deliveroo, Glovo** alla pagina di 84010 (ora portano alla home del servizio) → `delivery` in `src/data/site.ts`
+- [ ] **Menù**: descrizione della pizza fritta «Criatù» uguale a «Würstel e patate» nel PDF (refuso?); birre scritte «0,2 CL» nel PDF, sul sito in litri → `src/data/menu.ts`
 - [ ] **Orari di apertura** e giorno di chiusura → `hours` / `closedLabel` in `src/data/site.ts`
       (finché sono vuoti il sito non li mostra e lo schema non li dichiara)
 - [ ] **CAP** 40133 (ripreso da elenchi pubblici per Via Ruggero Grieco 7F)

@@ -1,0 +1,182 @@
+---
+/**
+ * Asporto e consegna: ritiro al locale (telefono / WhatsApp) e consegna a
+ * domicilio tramite i partner indicati dal cliente: Just Eat, Deliveroo, Glovo.
+ * I nomi dei servizi sono scritti come testo (niente loghi di terzi); un
+ * puntino nel colore di ciascun marchio aiuta il riconoscimento.
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Icon from '../ui/Icon.astro';
+import { consegna } from '@/data/content';
+import { address, contact, delivery } from '@/data/site';
+import { rich } from '@/lib/rich';
+
+const waOrder = `${contact.whatsapp.href}?text=${encodeURIComponent('Ciao 84010! Vorrei ordinare da asporto:')}`;
+---
+<Section id="consegna" tone="alt" label="Asporto e consegna a domicilio">
+  <Container>
+    <div class="cs-head">
+      <p class="kicker">{consegna.kicker}</p>
+      <h2 class="section-title" set:html={rich(consegna.title)} />
+      <p class="cs-lead" data-stagger>{consegna.lead}</p>
+    </div>
+
+    <div class="cs-grid">
+      <!-- Ritiro al locale -->
+      <article class="cs-card" data-reveal>
+        <span class="cs-num" aria-hidden="true">I</span>
+        <h3 class="cs-title">{consegna.ritiro.title}</h3>
+        <p class="cs-body">{consegna.ritiro.body}</p>
+        <div class="cs-actions">
+          <a href={contact.phone.href} class="btn btn-copper">
+            <span class="btn-label"><Icon name="phone" /> {contact.phone.label}</span>
+          </a>
+          <a href={waOrder} target="_blank" rel="noopener" class="btn btn-ghost">
+            <span class="btn-label"><Icon name="whatsapp" /> WhatsApp</span>
+          </a>
+        </div>
+        <a class="cs-addr" href={address.mapsHref} target="_blank" rel="noopener">
+          <Icon name="pin" size={15} /> {address.street}, {address.city}
+        </a>
+      </article>
+
+      <!-- Consegna a domicilio -->
+      <article class="cs-card" data-reveal style="--d:.15s">
+        <span class="cs-num" aria-hidden="true">II</span>
+        <h3 class="cs-title">{consegna.delivery.title}</h3>
+        <p class="cs-body">{consegna.delivery.body}</p>
+        <ul class="cs-partners">
+          {delivery.map((d) => (
+            <li>
+              <a href={d.href} target="_blank" rel="noopener" class="fx-btn cs-partner" style={`--brand:${d.color}`} aria-label={`Ordina 84010 Pizzeria su ${d.name}`}>
+                <span class="btn-label">
+                  <span class="cs-dot" aria-hidden="true"></span>
+                  <span class="cs-name">{d.name}</span>
+                  <Icon name="arrow" size={15} class="cs-arrow" />
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </article>
+    </div>
+  </Container>
+</Section>
+
+<style>
+  .cs-head {
+    max-width: 44rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .cs-head :global(.kicker) { justify-content: center; }
+  .cs-lead {
+    margin-top: 1.25rem;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+  .cs-grid {
+    margin-top: 4rem;
+    display: grid;
+    gap: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .cs-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .cs-grid .cs-card {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(2rem, 4vw, 3rem);
+    border-radius: var(--radius-card);
+    border: 1px solid rgb(255 255 255 / 0.08);
+    background: linear-gradient(180deg, rgb(20 20 20 / 0.85), rgb(8 8 8 / 0.9));
+    box-shadow: 0 40px 80px -50px rgb(0 0 0 / 0.95);
+    transition: opacity 0.9s var(--ease-out) var(--d, 0s), border-color 0.4s ease;
+  }
+  .cs-card:hover { border-color: rgb(246 183 101 / 0.25); }
+  .cs-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 2.2rem;
+    line-height: 1;
+    background-image: var(--copper-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .cs-title {
+    margin-top: 1rem;
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    color: var(--color-sand);
+  }
+  .cs-body {
+    margin-top: 0.9rem;
+    max-width: 46ch;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--color-muted);
+  }
+  .cs-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .cs-addr {
+    margin-top: auto;
+    padding-top: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    transition: color 0.3s ease;
+  }
+  .cs-addr:hover { color: var(--color-copper-light); }
+  .cs-addr :global(svg) { color: var(--color-copper-light); }
+
+  .cs-partners {
+    margin-top: 2rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .cs-partner {
+    --shine: rgb(255 255 255 / 0.55);
+    width: 100%;
+    justify-content: flex-start;
+    min-height: 3.6rem;
+    padding: 0.9rem 1.5rem;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    background: rgb(255 255 255 / 0.03);
+    color: var(--color-sand);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .cs-partner:hover {
+    border-color: color-mix(in srgb, var(--brand) 60%, transparent);
+    background: color-mix(in srgb, var(--brand) 8%, transparent);
+  }
+  .cs-partner :global(.btn-label) { width: 100%; gap: 0.9rem; }
+  .cs-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--brand) 60%, transparent);
+  }
+  .cs-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+  }
+  .cs-partner :global(.cs-arrow) {
+    margin-left: auto;
+    color: var(--color-muted);
+    transition: transform 0.4s var(--ease-out), color 0.3s ease;
+  }
+  .cs-partner:hover :global(.cs-arrow) { transform: translateX(4px); color: var(--color-sand); }
+  @media (max-width: 420px) {
+    .cs-actions :global(.btn) { flex: 1 1 100%; }
+  }
+</style>

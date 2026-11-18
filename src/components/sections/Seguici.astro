@@ -59,17 +59,19 @@ const tiles = [
     color: var(--color-muted);
   }
   .mc-sg-flow { margin-top: 3.5rem; overflow: hidden; }
-  .mc-sg-tiles { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+  .mc-sg-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (min-width: 900px) { .mc-sg-tiles { display: flex; gap: 1.25rem; } }
   .mc-sg-tile {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.35rem;
-    width: 11rem;
+    width: 100%;
+    min-width: 11rem;
     padding: 1.4rem;
     border-radius: var(--radius-card);
     border: 1px solid rgb(246 183 101 / 0.2);
-    background: rgb(23 18 14 / 0.7);
+    background: rgb(12 12 12 / 0.7);
     transition: transform 0.4s var(--ease-out), border-color 0.4s ease, box-shadow 0.4s ease;
   }
   .mc-sg-tile:hover {

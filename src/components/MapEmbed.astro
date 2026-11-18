@@ -69,8 +69,8 @@ const title = `Mappa: ${site.name}, ${address.street}, ${address.city}`;
     gap: 0.9rem;
     background:
       radial-gradient(40% 40% at 50% 45%, rgb(190 111 41 / 0.25), transparent 70%),
-      linear-gradient(rgb(22 14 9 / 0.55), rgb(22 14 9 / 0.55)),
-      url('/img/carta-stropicciata-m.webp') center / cover;
+      linear-gradient(rgb(8 8 8 / 0.55), rgb(8 8 8 / 0.55)),
+      url('/img/roccia-nera-m.webp') center / cover;
     transition: opacity 0.8s ease;
   }
   .map-pin {
@@ -103,7 +103,7 @@ const title = `Mappa: ${site.name}, ${address.street}, ${address.city}`;
     height: 100%;
     border: 0;
     opacity: 0;
-    filter: invert(0.9) hue-rotate(180deg) sepia(0.35) saturate(0.75) brightness(0.92) contrast(0.92);
+    filter: invert(0.92) hue-rotate(180deg) grayscale(0.7) brightness(0.86) contrast(0.95);
     transition: opacity 0.8s ease;
   }
   .map.is-ready iframe { opacity: 1; }
@@ -121,7 +121,7 @@ const title = `Mappa: ${site.name}, ${address.street}, ${address.city}`;
     max-width: calc(100% - 2rem);
     padding: 1rem 1.25rem;
     border-radius: 0.9rem;
-    background: rgb(22 14 9 / 0.86);
+    background: rgb(8 8 8 / 0.86);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 0 0 1px rgb(246 183 101 / 0.2), 0 20px 40px -20px rgb(0 0 0 / 0.8);

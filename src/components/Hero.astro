@@ -126,8 +126,8 @@ const ridge = 'M9 132 L225 31 L273 53 L321 31 L334 31 L345 38 L357 35 L530 132';
     inset: 0;
     z-index: 2;
     background:
-      radial-gradient(60% 55% at 50% 45%, rgb(22 14 9 / 0.62) 0%, rgb(22 14 9 / 0.45) 55%, rgb(22 14 9 / 0.8) 100%),
-      linear-gradient(to bottom, rgb(22 14 9 / 0.65) 0%, transparent 22%, transparent 62%, rgb(22 14 9 / 0.96) 100%);
+      radial-gradient(60% 55% at 50% 48%, rgb(8 8 8 / 0.72) 0%, rgb(8 8 8 / 0.5) 60%, rgb(8 8 8 / 0.82) 100%),
+      linear-gradient(to bottom, rgb(8 8 8 / 0.65) 0%, transparent 22%, transparent 62%, rgb(8 8 8 / 0.96) 100%);
   }
 
   /* ---------- Vesuvio in rame ---------- */
@@ -165,6 +165,10 @@ const ridge = 'M9 132 L225 31 L273 53 L321 31 L334 31 L345 38 L357 35 L530 132';
     max-width: 52rem;
     text-align: center;
   }
+  .hx-kicker,
+  .hx-h1,
+  .hx-claim { text-shadow: 0 2px 18px rgb(0 0 0 / 0.75); }
+  .hx-claim em { filter: drop-shadow(0 2px 10px rgb(0 0 0 / 0.8)); }
   .hx-kicker {
     display: flex;
     align-items: center;
@@ -173,7 +177,7 @@ const ridge = 'M9 132 L225 31 L273 53 L321 31 L334 31 L345 38 L357 35 L530 132';
     font-weight: 500;
     letter-spacing: 0.42em;
     text-transform: uppercase;
-    color: var(--color-taupe);
+    color: rgb(236 232 225 / 0.78);
     animation: hx-up 1s var(--ease-out) 0.1s both;
   }
   .hx-kicker::before,
@@ -283,9 +287,13 @@ const ridge = 'M9 132 L225 31 L273 53 L321 31 L334 31 L345 38 L357 35 L530 132';
   @media (max-width: 639px) {
     .hx { padding-bottom: 10rem; }
     .hx-bar { grid-template-columns: 1fr; padding-bottom: 6.25rem; text-align: center; }
-    .hx-kicker { letter-spacing: 0.26em; font-size: 0.58rem; white-space: nowrap; }
+    .hx-kicker,
+  .hx-h1,
+  .hx-claim { text-shadow: 0 2px 18px rgb(0 0 0 / 0.75); }
+  .hx-claim em { filter: drop-shadow(0 2px 10px rgb(0 0 0 / 0.8)); }
+  .hx-kicker { letter-spacing: 0.26em; font-size: 0.58rem; white-space: nowrap; }
     .hx-kicker::before, .hx-kicker::after { display: none; }
-    .hx-h1 { letter-spacing: 0.32em; }
+    .hx-h1 { font-size: 0.66rem; letter-spacing: 0.22em; padding-left: 0.22em; }
     .hx-claim { font-size: 1.35rem; }
     .hx-claim em { margin-top: 0.15rem; }
     .hx-actions .btn { flex: 1 1 100%; }

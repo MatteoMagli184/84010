@@ -58,7 +58,7 @@ import { rich } from '@/lib/rich';
     position: absolute;
     inset: 0;
     background: url('/img/carta-stropicciata.webp') center / cover;
-    filter: brightness(0.5) sepia(0.4) saturate(1.2);
+    filter: brightness(0.45) saturate(0.2);
   }
   .mc-band-slide {
     position: absolute;
@@ -72,8 +72,8 @@ import { rich } from '@/lib/rich';
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(55% 65% at 85% 60%, rgb(100 34 22 / 0.45), transparent 70%),
-      linear-gradient(100deg, rgb(22 14 9 / 0.94) 0%, rgb(22 14 9 / 0.75) 50%, rgb(22 14 9 / 0.35) 100%);
+      radial-gradient(55% 65% at 85% 60%, rgb(190 111 41 / 0.16), transparent 70%),
+      linear-gradient(100deg, rgb(8 8 8 / 0.94) 0%, rgb(8 8 8 / 0.75) 50%, rgb(8 8 8 / 0.35) 100%);
   }
   .mc-band-inner { position: relative; z-index: 2; max-width: 42rem; }
   .mc-band-title {
@@ -138,6 +138,11 @@ import { rich } from '@/lib/rich';
       if (v && slides.length > 1) timer = setInterval(go, 5000);
       parallax();
     });
-    window.addEventListener('scroll', () => requestAnimationFrame(parallax), { passive: true });
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { ticking = false; parallax(); });
+    }, { passive: true });
   }
 </script>

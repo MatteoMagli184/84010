@@ -1,15 +1,14 @@
 ---
-/** Chi siamo (About di mc8): testo del cliente + nicchia ad arco del moodboard. */
+/** Chi siamo (About di mc8): testo del cliente + la foto di Pompei e del Vesuvio (le radici). */
 import Section from '../ui/Section.astro';
 import Container from '../ui/Container.astro';
-import DepthCarousel from '../DepthCarousel.astro';
+import { Image } from 'astro:assets';
 import { photos } from '@/data/photos';
 import { about } from '@/data/content';
 import { rich } from '@/lib/rich';
 
 const [first, ...rest] = about.body;
-// Carosello in profondità (DepthCarousel di mc8)
-const gallery = [photos.impastoFarina, photos.pizzaInSala, photos.vesuvioGolfo, photos.margheritaPiatto, photos.salaApplique, photos.fornoCupola];
+const radici = photos.pompeiVesuvio;
 ---
 <Section id="chi-siamo" label="Chi siamo">
   <Container>
@@ -27,10 +26,20 @@ const gallery = [photos.impastoFarina, photos.pizzaInSala, photos.vesuvioGolfo, 
         </ul>
       </div>
 
-      <div class="mc-about-media" data-reveal>
-        <DepthCarousel images={gallery} label="Foto della pizzeria" prevLabel="Foto precedente" nextLabel="Foto successiva" cardWidth={290} cardHeight={390} />
-        <p class="mc-about-niche"><strong class="copper">{about.niche.title}</strong> {about.niche.text}</p>
-      </div>
+      <figure class="mc-about-media">
+        <div class="mc-about-frame" data-curtain>
+          <Image
+            src={radici.src}
+            alt={radici.alt}
+            widths={[480, 720, 940]}
+            sizes="(min-width: 1024px) 40vw, 92vw"
+            quality={80}
+            class="mc-about-img"
+            style={`object-position:${radici.pos}`}
+          />
+        </div>
+        <figcaption class="mc-about-caption">{about.photoCaption}</figcaption>
+      </figure>
     </div>
   </Container>
 </Section>
@@ -100,22 +109,32 @@ const gallery = [photos.impastoFarina, photos.pizzaInSala, photos.vesuvioGolfo, 
     transform: rotate(45deg);
     background: var(--color-copper);
   }
-  .mc-about-media {
+  .mc-about-media { margin: 0; }
+  .mc-about-frame {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 6;
+    max-height: 46rem;
+    border-radius: var(--radius-card);
+    background: var(--color-coal);
+    box-shadow: 0 50px 90px -45px rgb(0 0 0 / 0.95), 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+  @media (max-width: 1023px) {
+    .mc-about-frame { aspect-ratio: 4 / 5; }
+  }
+  .mc-about-img {
     width: 100%;
-    min-height: 30rem;
-    display: flex;
-    flex-direction: column;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.4s var(--ease-out);
   }
-  .mc-about-media :global(.depthc) { flex: 1 1 auto; min-height: 30rem; }
-  @media (max-width: 639px) {
-    .mc-about-media, .mc-about-media :global(.depthc) { min-height: 25rem; }
-  }
-  .mc-about-niche {
-    margin-top: 0.5rem;
+  .mc-about-media:hover .mc-about-img { transform: scale(1.04); }
+  .mc-about-caption {
+    margin-top: 1rem;
     text-align: center;
     font-family: var(--font-display);
     font-style: italic;
+    font-size: 1rem;
     color: var(--color-muted);
   }
-  .mc-about-niche strong { font-style: normal; font-size: 1.3rem; margin-right: 0.35rem; }
 </style>

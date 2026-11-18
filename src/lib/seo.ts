@@ -1,5 +1,6 @@
-import { site, contact, address, hours, social, legal } from '@/data/site';
+import { site, contact, address, hours, social, legal, delivery } from '@/data/site';
 import { meta, hero, about, faq } from '@/data/content';
+import { menu } from '@/data/menu';
 
 const id = (frag: string) => `${site.url}/#${frag}`;
 
@@ -36,13 +37,29 @@ export function homeJsonLd() {
       : {}),
     hasMap: address.mapsHref,
     areaServed: { '@type': 'City', name: 'Bologna' },
-    servesCuisine: ['Pizza', 'Pizza napoletana', 'Cucina campana', 'Cucina italiana'],
+    servesCuisine: ['Pizza', 'Pizza contemporanea', 'Cucina campana', 'Cucina italiana'],
+    hasMenu: { '@id': id('menu') },
+    priceRange: '€€',
     acceptsReservations: true,
-    potentialAction: {
-      '@type': 'ReserveAction',
-      target: { '@type': 'EntryPoint', urlTemplate: contact.whatsapp.href, actionPlatform: ['http://schema.org/DesktopWebPlatform', 'http://schema.org/MobileWebPlatform'] },
-      result: { '@type': 'FoodEstablishmentReservation', name: 'Prenotazione tavolo' },
-    },
+    potentialAction: [
+      {
+        '@type': 'ReserveAction',
+        target: { '@type': 'EntryPoint', urlTemplate: contact.whatsapp.href, actionPlatform: ['http://schema.org/DesktopWebPlatform', 'http://schema.org/MobileWebPlatform'] },
+        result: { '@type': 'FoodEstablishmentReservation', name: 'Prenotazione tavolo' },
+      },
+      // Consegna a domicilio tramite partner + ritiro al locale
+      ...delivery.map((d) => ({
+        '@type': 'OrderAction',
+        name: `Ordina su ${d.name}`,
+        target: { '@type': 'EntryPoint', urlTemplate: d.href },
+      })),
+      {
+        '@type': 'OrderAction',
+        name: 'Ordina da asporto (ritiro al locale)',
+        target: { '@type': 'EntryPoint', urlTemplate: contact.phone.href },
+        deliveryMethod: 'http://purl.org/goodrelations/v1#DeliveryModePickUp',
+      },
+    ],
     contactPoint: [
       { '@type': 'ContactPoint', telephone: contact.phone.e164, contactType: 'reservations', availableLanguage: ['Italian'] },
       { '@type': 'ContactPoint', telephone: contact.whatsapp.e164, contactType: 'reservations', contactOption: 'WhatsApp', availableLanguage: ['Italian'] },
@@ -57,7 +74,7 @@ export function homeJsonLd() {
           })),
         }
       : {}),
-    knowsAbout: ['Pizza napoletana', 'Cucina campana', about.values].flat(),
+    knowsAbout: ['Pizza contemporanea', 'Pizza tradizionale', 'Pizza fritta', 'Cucina campana', about.values].flat(),
     sameAs: [social.instagram.href, social.facebook.href],
   };
 
@@ -83,6 +100,26 @@ export function homeJsonLd() {
         isPartOf: { '@id': id('sito') },
         about: { '@id': id('pizzeria') },
         primaryImageOfPage: `${site.url}/og-84010.jpg`,
+      },
+      {
+        '@type': 'Menu',
+        '@id': id('menu'),
+        name: 'Menù di 84010 Pizzeria',
+        url: `${site.url}/#menu`,
+        inLanguage: 'it-IT',
+        hasMenuSection: menu.map((sec) => ({
+          '@type': 'MenuSection',
+          name: sec.title,
+          ...(sec.note ? { description: sec.note } : {}),
+          hasMenuItem: sec.groups.flatMap((g) =>
+            g.items.map((it) => ({
+              '@type': 'MenuItem',
+              name: g.title && /birre/i.test(g.title) ? `${g.title} ${it.name}` : it.name,
+              ...(it.desc ? { description: it.desc } : {}),
+              offers: { '@type': 'Offer', price: it.price.toFixed(2), priceCurrency: 'EUR' },
+            })),
+          ),
+        })),
       },
       {
         '@type': 'FAQPage',

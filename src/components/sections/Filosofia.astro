@@ -1,0 +1,155 @@
+---
+/**
+ * La nostra pizza: le tre parti scritte dal cliente.
+ *  I   Le mani, la storia, il cuore → accanto alla foto di Giovanni, mastro pizzaiolo
+ *  II  La qualità ha un'origine
+ *  III Le nostre radici, una nuova espressione
+ * Numeri romani in corsivo ramato, filetti sottili, foto a tendina.
+ */
+import { Image } from 'astro:assets';
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import { filosofia } from '@/data/content';
+import { photos } from '@/data/photos';
+import { rich } from '@/lib/rich';
+
+const [uno, ...altre] = filosofia.parts;
+const giovanni = photos.giovanniPizzaiolo;
+const roman = ['I', 'II', 'III'];
+---
+<Section id="la-nostra-pizza" tone="alt" label="La nostra pizza">
+  <Container>
+    <div class="fl-head">
+      <p class="kicker">{filosofia.kicker}</p>
+      <h2 class="section-title" set:html={rich(filosofia.title)} />
+    </div>
+
+    <!-- I · Giovanni -->
+    <article class="fl-feature">
+      <figure class="fl-photo">
+        <div class="fl-frame" data-curtain>
+          <Image
+            src={giovanni.src}
+            alt={giovanni.alt}
+            widths={[480, 720, 1000, 1235]}
+            sizes="(min-width: 1024px) 46vw, 92vw"
+            quality={82}
+            class="fl-img"
+            style={`object-position:${giovanni.pos}`}
+          />
+        </div>
+      </figure>
+      <div class="fl-text" data-reveal>
+        <span class="fl-num" aria-hidden="true">{roman[0]}</span>
+        <h3 class="fl-title">{uno.title}</h3>
+        <p class="fl-lead">{uno.body[0]}</p>
+        {uno.body.slice(1).map((p) => <p class="fl-body">{p}</p>)}
+        {uno.sign && <p class="fl-sign">{uno.sign}</p>}
+      </div>
+    </article>
+
+    <!-- II · III -->
+    <div class="fl-cols">
+      {altre.map((part, i) => (
+        <article class="fl-col" data-reveal style={`--d:${i * 0.15}s`}>
+          <span class="fl-num" aria-hidden="true">{roman[i + 1]}</span>
+          <h3 class="fl-title">{part.title}</h3>
+          {part.body.map((p) => <p class="fl-body">{p}</p>)}
+        </article>
+      ))}
+    </div>
+  </Container>
+</Section>
+
+<style>
+  .fl-head {
+    max-width: 44rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .fl-head :global(.kicker) { justify-content: center; }
+
+  /* I — foto + testo */
+  .fl-feature {
+    margin-top: 4.5rem;
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .fl-feature { grid-template-columns: 1.05fr 0.95fr; gap: 5rem; }
+  }
+  .fl-photo { margin: 0; }
+  .fl-frame {
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-card);
+    background: var(--color-coal);
+    box-shadow: 0 50px 90px -45px rgb(0 0 0 / 0.95), 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+  .fl-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .fl-num {
+    display: block;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 2.6rem;
+    line-height: 1;
+    background-image: var(--copper-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .fl-title {
+    margin-top: 1.1rem;
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+    line-height: 1.15;
+    color: var(--color-sand);
+  }
+  .fl-lead {
+    margin-top: 1.4rem;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.2rem, 1.9vw, 1.45rem);
+    line-height: 1.45;
+    color: var(--color-sand);
+  }
+  .fl-body {
+    margin-top: 1rem;
+    max-width: 56ch;
+    font-size: 1rem;
+    line-height: 1.85;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+  .fl-sign {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-line);
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-copper-light);
+  }
+
+  /* II e III — due colonne con filetto */
+  .fl-cols {
+    margin-top: 5.5rem;
+    display: grid;
+    gap: 3.5rem;
+  }
+  @media (min-width: 900px) {
+    .fl-cols { grid-template-columns: 1fr 1fr; gap: 0; }
+    .fl-col { padding: 0 3.5rem; }
+    .fl-col:first-child { padding-left: 0; }
+    .fl-col + .fl-col { border-left: 1px solid var(--color-line); padding-right: 0; }
+  }
+  .fl-cols .fl-col {
+    transition: opacity 0.9s var(--ease-out) var(--d, 0s);
+  }
+</style>

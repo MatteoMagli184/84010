@@ -1,0 +1,291 @@
+---
+/**
+ * Menù: linguette per categoria (scorrevoli su telefono), voci con puntini di
+ * guida fino al prezzo, note su lattosio/glutine e allergeni, download del PDF.
+ * Senza JavaScript tutte le categorie restano visibili una sotto l'altra.
+ * Dati in src/data/menu.ts.
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Icon from '../ui/Icon.astro';
+import { menu, menuAllergeni, formatPrice } from '@/data/menu';
+import { menuIntro } from '@/data/content';
+import { rich } from '@/lib/rich';
+---
+<Section id="menu" label="Menù della pizzeria">
+  <Container>
+    <div class="mn-head">
+      <p class="kicker">{menuIntro.kicker}</p>
+      <h2 class="section-title" set:html={rich(menuIntro.title)} />
+      <p class="mn-lead" data-stagger>{menuIntro.lead}</p>
+    </div>
+
+    <div class="mn-tabs" role="tablist" aria-label="Categorie del menù" data-menu-tabs>
+      {menu.map((s, i) => (
+        <button
+          type="button"
+          role="tab"
+          class="mn-tab"
+          id={`tab-${s.id}`}
+          aria-controls={`menu-${s.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          data-tab={s.id}
+        >{s.tab}</button>
+      ))}
+    </div>
+
+    <div class="mn-panels" data-menu-panels>
+      {menu.map((s, i) => (
+        <section
+          class="mn-panel"
+          id={`menu-${s.id}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${s.id}`}
+          data-panel={s.id}
+          data-active={i === 0 ? '' : undefined}
+        >
+          <h3 class="mn-panel-title">{s.title}</h3>
+          {s.note && <p class="mn-note">{s.note}</p>}
+          {s.groups.map((g) => (
+            <div class="mn-group">
+              {g.title && <h4 class="mn-group-title">{g.title}</h4>}
+              <ul class="mn-list">
+                {g.items.map((it) => (
+                  <li class="mn-item">
+                    <div class="mn-row">
+                      <span class="mn-name">{it.name}</span>
+                      <span class="mn-dots" aria-hidden="true"></span>
+                      <span class="mn-price"><span class="sr-only">prezzo </span>€ {formatPrice(it.price)}</span>
+                    </div>
+                    {it.desc && <p class="mn-desc">{it.desc}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+      ))}
+    </div>
+
+    <div class="mn-foot">
+      <p class="mn-allergeni">{menuAllergeni}</p>
+      <a href="/menu-84010.pdf" class="btn btn-ghost" target="_blank" rel="noopener">
+        <span class="btn-label"><Icon name="arrow" /> Scarica il menù (PDF)</span>
+      </a>
+    </div>
+  </Container>
+</Section>
+
+<style>
+  .mn-head {
+    max-width: 44rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .mn-head :global(.kicker) { justify-content: center; }
+  .mn-lead {
+    margin-top: 1.25rem;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+
+  /* Linguette */
+  .mn-tabs {
+    margin: 3.5rem auto 0;
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .mn-tab {
+    position: relative;
+    padding: 0.95rem 1rem;
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .mn-tab::after {
+    content: '';
+    position: absolute;
+    left: 1.1rem;
+    right: 1.1rem;
+    bottom: -1px;
+    height: 1px;
+    background: var(--color-copper-light);
+    transform: scaleX(0);
+    transition: transform 0.45s var(--ease-out);
+  }
+  .mn-tab:hover { color: var(--color-sand); }
+  .mn-tab[aria-selected='true'] { color: var(--color-copper-light); }
+  .mn-tab[aria-selected='true']::after { transform: scaleX(1); }
+  @media (max-width: 899px) {
+    .mn-tabs {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-inline: -1rem;
+      padding: 0.25rem 1rem 1.25rem;
+      border-bottom: 0;
+      scroll-snap-type: x proximity;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 1rem, #000 calc(100% - 1.5rem), transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 1rem, #000 calc(100% - 1.5rem), transparent 100%);
+    }
+    .mn-tabs::-webkit-scrollbar { display: none; }
+    .mn-tab {
+      flex: 0 0 auto;
+      min-height: 2.75rem;
+      padding: 0.7rem 1.15rem;
+      border: 1px solid rgb(255 255 255 / 0.14);
+      border-radius: 999px;
+      font-size: 0.66rem;
+      letter-spacing: 0.16em;
+      scroll-snap-align: center;
+      transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+    }
+    .mn-tab::after { display: none; }
+    .mn-tab[aria-selected='true'] {
+      color: #0b0b0b;
+      border-color: transparent;
+      background: linear-gradient(180deg, #e7a868, #b06d2c);
+    }
+    .mn-panels { margin-top: 1.5rem; }
+    .mn-list { gap: 1.6rem; }
+    .mn-name { font-size: 1.18rem; }
+    .mn-foot { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* Pannelli */
+  .mn-panels { margin-top: 3rem; }
+  .mn-panel + .mn-panel { margin-top: 4rem; }
+  :global(.js-menu) .mn-panel { display: none; margin-top: 0; }
+  :global(.js-menu) .mn-panel[data-active] { display: block; animation: mn-in 0.6s var(--ease-out); }
+  @keyframes mn-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+  .mn-panel-title {
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    text-align: center;
+    color: var(--color-sand);
+  }
+  .mn-note {
+    margin-top: 0.4rem;
+    text-align: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.98rem;
+    color: var(--color-copper-light);
+  }
+  .mn-group + .mn-group { margin-top: 3rem; }
+  .mn-group-title {
+    margin-bottom: 1.25rem;
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+    text-align: center;
+  }
+  .mn-list {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1.75rem 4.5rem;
+  }
+  .mn-group-title + .mn-list { margin-top: 0; }
+  @media (min-width: 900px) {
+    .mn-list { grid-template-columns: 1fr 1fr; }
+  }
+  .mn-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .mn-name {
+    font-family: var(--font-display);
+    font-size: 1.28rem;
+    line-height: 1.25;
+    color: var(--color-sand);
+  }
+  .mn-dots {
+    flex: 1 1 auto;
+    min-width: 1.5rem;
+    border-bottom: 1px dotted rgb(255 255 255 / 0.22);
+    transform: translateY(-0.3rem);
+  }
+  .mn-price {
+    flex: 0 0 auto;
+    font-family: var(--font-display);
+    font-size: 1.12rem;
+    color: var(--color-copper-light);
+    white-space: nowrap;
+  }
+  .mn-desc {
+    margin-top: 0.35rem;
+    max-width: 52ch;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+
+  .mn-foot {
+    margin-top: 4rem;
+    padding-top: 2.25rem;
+    border-top: 1px solid var(--color-line);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem 3rem;
+  }
+  .mn-allergeni {
+    max-width: 62ch;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js-menu) .mn-panel[data-active] { animation: none; }
+  }
+</style>
+
+<script>
+  const tabsBox = document.querySelector<HTMLElement>('[data-menu-tabs]');
+  const panelsBox = document.querySelector<HTMLElement>('[data-menu-panels]');
+  if (tabsBox && panelsBox) {
+    document.documentElement.classList.add('js-menu');
+    const tabs = [...tabsBox.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const panels = [...panelsBox.querySelectorAll<HTMLElement>('[data-panel]')];
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, n) => {
+        const on = n === i;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((p, n) => p.toggleAttribute('data-active', n === i));
+      const t = tabs[i];
+      if (focus) t.focus();
+      // linguetta attiva al centro della riga scorrevole (telefono), senza muovere la pagina
+      if (tabsBox.scrollWidth > tabsBox.clientWidth) {
+        tabsBox.scrollTo({ left: t.offsetLeft - (tabsBox.clientWidth - t.offsetWidth) / 2, behavior: 'smooth' });
+      }
+    };
+    tabs.forEach((t, i) => t.addEventListener('click', () => select(i)));
+    tabsBox.addEventListener('keydown', (e) => {
+      const i = tabs.indexOf(document.activeElement as HTMLButtonElement);
+      if (i < 0) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); select((i + 1) % tabs.length, true); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); select((i - 1 + tabs.length) % tabs.length, true); }
+    });
+  }
+</script>

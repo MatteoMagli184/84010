@@ -65,7 +65,7 @@ const to = (id: string) => (home ? `#${id}` : `/#${id}`);
   .mc-header[data-over-dark] .mc-veil { opacity: 1; }
   .mc-solid {
     opacity: 0;
-    background: rgb(22 14 9 / 0.78);
+    background: rgb(8 8 8 / 0.78);
     backdrop-filter: blur(14px) saturate(1.1);
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
     box-shadow: 0 1px 0 rgb(246 183 101 / 0.18);
@@ -200,7 +200,6 @@ const to = (id: string) => (home ? `#${id}` : `/#${id}`);
     lastY = y;
   };
   sync();
-  window.addEventListener('scroll', sync, { passive: true });
 
   // Scrollspy: la voce della sezione che occupa il centro dello schermo si accende.
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-spy]')];
@@ -216,22 +215,32 @@ const to = (id: string) => (home ? `#${id}` : `/#${id}`);
       const r = s.getBoundingClientRect();
       if (r.top <= mid && r.bottom > mid) current = s.id;
     }
+    if (current === lastActive) return;
     links.forEach((a) => {
       const on = a.dataset.spy === current;
       a.classList.toggle('is-active', on);
       if (on) a.setAttribute('aria-current', 'location');
       else a.removeAttribute('aria-current');
       // Riga scorrevole (telefono): porta la voce attiva al centro, senza muovere la pagina
-      if (on && current !== lastActive && track && track.scrollWidth > track.clientWidth) {
+      if (on && track && track.scrollWidth > track.clientWidth) {
         const left = a.offsetLeft - (track.clientWidth - a.offsetWidth) / 2;
         track.scrollTo({ left, behavior: 'smooth' });
       }
     });
     lastActive = current;
   };
-  if (sections.length) {
-    spy();
-    window.addEventListener('scroll', spy, { passive: true });
-    window.addEventListener('resize', spy);
-  }
+  // Un solo aggiornamento per fotogramma, qualunque sia la frequenza degli eventi di scroll
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      sync();
+      if (sections.length) spy();
+    });
+  };
+  if (sections.length) spy();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
 </script>

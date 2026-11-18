@@ -1,39 +1,39 @@
 /**
- * Testi del sito. «Chi siamo» è il testo fornito dal cliente (solo punteggiatura
- * sistemata). Gli altri testi sono costruiti su quello, senza inventare dati
- * (niente menu, prezzi o orari che il cliente non ha dato).
+ * Testi del sito.
+ * - «Chi siamo» e le tre parti della filosofia (I, II, III) sono testi del
+ *   cliente (solo punteggiatura sistemata).
+ * - La pizza è «contemporanea tradizionale» (NON napoletana: richiesta cliente).
+ * - La famiglia si racconta solo in «Chi siamo»; il resto del sito parla del prodotto.
  *
- * Nei titoli le parole tra *asterischi* escono in grassetto ramato, come nella
- * grafica «Per *info* e *prenotazioni*» (vedi src/lib/rich.ts).
+ * Nei titoli le parole tra *asterischi* escono in corsivo ramato (src/lib/rich.ts).
  */
-import { address } from './site';
+import { address, contact } from './site';
 import { photos } from './photos';
 
 export const meta = {
   // ~60 caratteri: marchio + parola chiave principale + città
-  title: '84010 Pizzeria Bologna | Pizza napoletana e sapori campani',
-  // ~155 caratteri: chi, cosa, dove, invito all'azione
+  title: '84010 Pizzeria Bologna | Pizza contemporanea tradizionale',
+  // ~155 caratteri: cosa, dove, servizi
   description:
-    'Pizzeria napoletana a Bologna in Via Ruggero Grieco 7F: pizza campana fatta in famiglia, da un padre pizzaiolo e una madre cuoca. Prenota su WhatsApp.',
+    'Pizzeria a Bologna in Via Ruggero Grieco 7F: pizza contemporanea di tradizione campana e ingredienti d’eccellenza. Sala, asporto e consegna a domicilio.',
   keywords: [
     'pizzeria Bologna',
-    'pizza napoletana Bologna',
-    'pizzeria napoletana Bologna',
-    'pizza campana Bologna',
+    'pizza contemporanea Bologna',
+    'pizza contemporanea tradizionale',
+    'pizza a domicilio Bologna',
+    'pizza da asporto Bologna',
+    'pizzeria campana Bologna',
     'pizzeria Via Ruggero Grieco',
-    'pizzeria a conduzione familiare Bologna',
-    'dove mangiare la pizza a Bologna',
+    'pizza Just Eat Deliveroo Glovo Bologna',
     '84010 Pizzeria',
   ],
 };
 
 export const hero = {
-  kicker: 'Pizzeria napoletana · Bologna',
-  h1Line: 'Pizza napoletana a Bologna',
-  claimTop: 'La nostra pizza parla campano,',
-  claimBottom: 'con il cuore di casa.',
-  lead: 'Un pezzetto di Campania in Via Ruggero Grieco: le mani di un padre pizzaiolo, la passione di una madre cuoca e una figlia che ha scelto questo nuovo capitolo insieme a loro.',
-  caption: 'Il Vesuvio, sempre all’orizzonte',
+  kicker: 'Pizzeria contemporanea · Bologna',
+  h1Line: 'Pizza contemporanea a Bologna',
+  claimTop: 'Un impasto di classe,',
+  claimBottom: 'un’anima verace.',
 };
 
 export const about = {
@@ -47,68 +47,72 @@ export const about = {
     'La nostra pizza parla campano, guarda al presente e custodisce il sapore delle nostre origini. Vorremmo che qui trovaste un posto in cui tornare.',
   ],
   sign: 'Benvenuti da 84010. La nostra storia continua, con voi.',
-  values: ['Radici campane', 'Cucina di famiglia', 'Accoglienza di casa'],
-  niche: {
-    title: '84010',
-    text: 'Un nome che è un indirizzo: quello di casa.',
+  values: ['Radici campane', 'Ingredienti d’eccellenza', 'Pizza contemporanea'],
+  photoCaption: 'Pompei e il Vesuvio · le nostre radici',
+};
+
+/** Le tre parti della filosofia (testi del cliente). */
+export const filosofia = {
+  kicker: 'La nostra pizza',
+  title: 'Maestria, qualità, *radici.*',
+  parts: [
+    {
+      title: 'Le mani, la storia, il cuore',
+      body: [
+        'Al cuore di 84010 c’è Giovanni, il nostro mastro pizzaiolo.',
+        'Nelle sue mani vive una storia di dedizione, fatta di gesti affinati nel tempo e di un’emozione rimasta intatta: quella della prima pizza infornata, dell’attesa davanti al forno, del desiderio di regalare qualcosa di buono. Oggi, alla sensibilità di allora si unisce la maestria di un pizzaiolo affermato, capace di trasformare acqua e farina in un’espressione autentica della nostra terra.',
+        'È lui l’anima della pizzeria.',
+      ],
+      sign: 'Giovanni · Mastro pizzaiolo',
+    },
+    {
+      title: 'La qualità ha un’origine',
+      body: [
+        'Ogni sapore nasce da una scelta. Per questo selezioniamo ingredienti di altissima qualità, dando valore alla freschezza, alla provenienza e al patrimonio del Made in Italy.',
+        'Cerchiamo materie prime dalla personalità autentica, da accostare con sensibilità e valorizzare nel rispetto delle loro caratteristiche.',
+        'Dalla semplicità del pomodoro alla delicatezza del fiordilatte, ogni ingrediente contribuisce a un equilibrio preciso: sapori riconoscibili, profumi pieni e abbinamenti in cui ogni dettaglio ha il suo perché.',
+      ],
+    },
+    {
+      title: 'Le nostre radici, una nuova espressione',
+      body: [
+        'Ogni pizza e ogni piatto raccontano il nostro modo di intendere l’ospitalità: cura, generosità e passione quotidiana.',
+        'Partiamo dalla tradizione, dai sapori che ci appartengono e dalle ricette che sanno di casa, per interpretarli con uno sguardo contemporaneo. Nuovi accostamenti e presentazioni curate ne rinnovano l’espressione, custodendone l’anima.',
+        'Così facciamo crescere 84010, giorno dopo giorno: con il desiderio di portare in tavola qualcosa che ci rappresenti e che lasci, oltre al gusto, il piacere di mangiare.',
+      ],
+    },
+  ],
+};
+
+export const poesiaIntro = {
+  kicker: '’A poesia',
+  sign: 'Dalla prima pagina del nostro menù',
+};
+
+export const menuIntro = {
+  kicker: 'Il menù',
+  title: 'Dal nostro forno, *alla tua tavola.*',
+  lead: 'Pizze contemporanee e grandi classici della tradizione, fritti, panuozzi e dolci: ogni ricetta nasce da ingredienti scelti uno a uno.',
+};
+
+export const consegna = {
+  kicker: 'Asporto e consegna',
+  title: 'La nostra pizza, *anche a casa tua.*',
+  lead: 'Ordina e passa a ritirarla al locale, oppure ricevila direttamente a casa con i nostri partner di consegna.',
+  ritiro: {
+    title: 'Ritiro al locale',
+    body: `Ordina per telefono o su WhatsApp e passa a prenderla in ${address.street}: la trovi pronta, appena uscita dal forno.`,
   },
-};
-
-export const famiglia = {
-  kicker: 'La famiglia',
-  title: 'Tre cuori, *un forno.*',
-  cards: [
-    {
-      title: 'Le mani del pizzaiolo',
-      body: 'Un padre pizzaiolo, con l’esperienza nelle mani e ancora l’emozione delle prime volte. È lui a dare forma alla nostra pizza napoletana.',
-      items: ['Pizza napoletana', 'Tradizione campana'],
-    },
-    {
-      title: 'La passione della cuoca',
-      body: 'Una madre cuoca che porta in tavola i sapori con cui siamo cresciuti: la cucina di casa, fatta con cura.',
-      items: ['Sapori di casa', 'Cura in ogni piatto'],
-    },
-    {
-      title: 'Il cuore di una figlia',
-      body: 'Una figlia che ha scelto di dare il proprio cuore a questo nuovo capitolo, insieme a loro, per accogliervi come a casa.',
-      items: ['Accoglienza', 'Un posto in cui tornare'],
-    },
-  ],
-};
-
-export const pizza = {
-  kicker: 'La pizza',
-  title: 'Il sapore delle origini, *a Bologna.*',
-  groups: [
-    {
-      id: 'dal-forno',
-      title: 'Dal forno',
-      scene: 'oven' as const,
-      caption: 'Pizza napoletana',
-      items: [
-        { icon: 'pizza' as const, title: 'Pizza napoletana', body: 'Parla campano, guarda al presente e custodisce il sapore delle nostre origini.' },
-        { icon: 'leaf' as const, title: 'Sapori campani', body: 'Il gusto di casa, portato in Emilia senza perdere nulla per strada.' },
-        { icon: 'hand' as const, title: 'Fatta a mano, in famiglia', body: 'La cura di ciò che prepariamo è il nostro modo di dirvi benvenuti.' },
-      ],
-    },
-    {
-      id: 'a-tavola',
-      title: 'A tavola',
-      scene: 'candle' as const,
-      caption: 'Ogni occasione',
-      items: [
-        { icon: 'glass' as const, title: 'Una serata da festeggiare', body: 'Compleanni, ricorrenze, buone notizie: c’è sempre un buon motivo.' },
-        { icon: 'users' as const, title: 'Ritrovare qualcuno', body: 'Una tavola condivisa, una pizza al centro e il tempo che rallenta.' },
-        { icon: 'heart' as const, title: 'Anche da soli', body: 'Per il semplice piacere di gustarsi una pizza in solitudine: qui c’è posto.' },
-      ],
-    },
-  ],
+  delivery: {
+    title: 'Consegna a domicilio',
+    body: 'Ci appoggiamo ai migliori servizi di consegna di Bologna: scegli il tuo e ordina dall’app.',
+  },
 };
 
 export const seguici = {
   kicker: 'Social',
   title: '*Seguici* su',
-  lead: 'Facebook e Instagram: novità, serate e tutto quello che esce dal nostro forno.',
+  lead: 'Facebook e Instagram: novità, nuove pizze e tutto quello che esce dal nostro forno.',
 };
 
 export const faq = {
@@ -121,15 +125,19 @@ export const faq = {
     },
     {
       q: 'Che tipo di pizza fate?',
-      a: 'Pizza napoletana, nel rispetto della tradizione campana da cui veniamo: la prepara un padre pizzaiolo, accanto alla cucina di una madre cuoca.',
+      a: 'Una pizza contemporanea tradizionale: partiamo dai sapori della tradizione campana e li interpretiamo con uno sguardo contemporaneo. L’impasto è curato da Giovanni, il nostro mastro pizzaiolo, con ingredienti di altissima qualità come pomodoro San Marzano, fiordilatte e bufala DOP.',
+    },
+    {
+      q: 'Fate asporto e consegna a domicilio?',
+      a: `Sì. Puoi ordinare per telefono (${contact.phone.label}) o su WhatsApp (${contact.whatsapp.label}) e ritirare al locale, oppure riceverla a casa con Just Eat, Deliveroo e Glovo.`,
+    },
+    {
+      q: 'Ci sono alternative senza lattosio o senza glutine?',
+      a: 'Pizze, cuzzitielli, panuozzi e insalate hanno l’alternativa senza lattosio (+ 2 €); crocchè e frittatine sono disponibili anche senza glutine e lattosio (+ 1 €). In caso di allergie avvisa il personale prima di ordinare.',
     },
     {
       q: 'Come posso prenotare un tavolo?',
-      a: 'Il modo più veloce è scriverci su WhatsApp al 351 937 4062, con il pulsante «Prenota un tavolo». Oppure puoi chiamare il numero fisso 051 430128.',
-    },
-    {
-      q: 'Posso venire per una festa o una cena di gruppo?',
-      a: 'Certo: per una serata da festeggiare o per ritrovare qualcuno scrivici in anticipo su WhatsApp, così prepariamo tutto al meglio.',
+      a: `Il modo più veloce è scriverci su WhatsApp al ${contact.whatsapp.label}, con il pulsante «Prenota un tavolo». Oppure puoi chiamare il numero fisso ${contact.phone.label}.`,
     },
   ],
 };
@@ -151,10 +159,10 @@ export const galleria = {
   kicker: 'Galleria',
   title: 'Dal forno *alla tavola*',
   projects: [
-    { cover: photos.margheritaDettaglio, title: 'Margherita', body: 'Pomodoro, mozzarella e basilico: la regina della pizza napoletana.' },
-    { cover: photos.fornoALegna, title: 'Il forno', body: 'Il cuore della pizzeria: fuoco vivo e cottura veloce, come a Napoli.' },
-    { cover: photos.impastoMani, title: 'L’impasto', body: 'Lavorato a mano ogni giorno, con l’esperienza di un padre pizzaiolo.' },
-    { cover: photos.pizzaNapoletanaBasilico, title: 'Pizza napoletana', body: 'Cornicione alto e morbido, il sapore delle nostre origini.' },
+    { cover: photos.margheritaDettaglio, title: 'Margherita', body: 'Pomodoro San Marzano, fiordilatte, olio EVO e basilico fresco: la semplicità fatta bene.' },
+    { cover: photos.fornoALegna, title: 'Il forno', body: 'Il cuore della pizzeria: fuoco vivo e cottura veloce.' },
+    { cover: photos.impastoMani, title: 'L’impasto', body: 'Lavorato a mano ogni giorno da Giovanni, il nostro mastro pizzaiolo.' },
+    { cover: photos.pizzaNapoletanaBasilico, title: 'Le nostre proposte', body: 'Accostamenti contemporanei, nel rispetto della tradizione.' },
     { cover: photos.salaCalda, title: 'La sala', body: 'Luci calde e un posto a tavola per ogni occasione.' },
     { cover: photos.vesuvioMare, title: 'Le radici', body: 'Il Vesuvio all’orizzonte: da lì arriva tutto quello che portiamo a Bologna.' },
   ],

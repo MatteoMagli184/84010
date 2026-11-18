@@ -30,7 +30,7 @@ const ogUrl = `${site.url}/og-84010.jpg`;
     {home && <meta name="keywords" content={meta.keywords.join(', ')} />}
     <link rel="canonical" href={url} />
     <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
-    <meta name="theme-color" content="#160e09" />
+    <meta name="theme-color" content="#0a0a0a" />
     <meta name="color-scheme" content="dark" />
     <meta name="author" content={site.name} />
 
@@ -70,7 +70,7 @@ const ogUrl = `${site.url}/og-84010.jpg`;
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />}
 
     <script is:inline>
-      document.documentElement.classList.add('js-reveal');
+      document.documentElement.classList.add('js-reveal', 'js-menu');
       setTimeout(() => document.documentElement.classList.add('reveal-timeout'), 2500);
     </script>
   </head>
@@ -107,6 +107,17 @@ const ogUrl = `${site.url}/og-84010.jpg`;
           autoRaf: true,
         });
         (window as unknown as { lenis: Lenis }).lenis = lenis;
+      }
+
+      // --- 0b. Bottoni animati: l'animazione gira solo se il bottone è visibile
+      const liveBtns = document.querySelectorAll('.btn, .fx-btn');
+      if (hasIO && liveBtns.length) {
+        const bio = new IntersectionObserver((entries) => {
+          for (const e of entries) e.target.classList.toggle('is-live', e.isIntersecting);
+        });
+        liveBtns.forEach((b) => bio.observe(b));
+      } else {
+        liveBtns.forEach((b) => b.classList.add('is-live'));
       }
 
       // --- 1. Reveal opacità e «tendina» sulle foto ------------------------

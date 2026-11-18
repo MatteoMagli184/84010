@@ -67,11 +67,22 @@ export const legal = {
 
 /** Voci della navigazione (ancore della one-page). */
 export const nav = [
-  { id: 'chi-siamo', label: 'Chi siamo', icon: 'home' },
-  { id: 'famiglia', label: 'Famiglia', icon: 'heart' },
-  { id: 'la-pizza', label: 'La pizza', icon: 'pizza' },
-  { id: 'galleria', label: 'Galleria', icon: 'camera' },
-  { id: 'contatti', label: 'Contatti', icon: 'pin' },
+  { id: 'chi-siamo', label: 'Chi siamo' },
+  { id: 'la-nostra-pizza', label: 'La pizza' },
+  { id: 'menu', label: 'Menù' },
+  { id: 'consegna', label: 'Asporto' },
+  { id: 'contatti', label: 'Contatti' },
+] as const;
+
+/**
+ * Consegna a domicilio tramite partner (indicazione del cliente).
+ * DA CONFERMARE: incollare in `href` il link diretto alla pagina di 84010
+ * su ciascuna app; finché non c'è si apre la pagina generica del servizio.
+ */
+export const delivery = [
+  { name: 'Just Eat', href: 'https://www.justeat.it/', color: '#ff8000' },
+  { name: 'Deliveroo', href: 'https://deliveroo.it/it/', color: '#00ccbc' },
+  { name: 'Glovo', href: 'https://glovoapp.com/it/it/bologna/', color: '#ffc244' },
 ] as const;
 
 /** Messaggio WhatsApp precompilato (link «Prenota» generici). */

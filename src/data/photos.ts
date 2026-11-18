@@ -32,6 +32,9 @@ import vesuvioGolfo from '@/assets/foto/vesuvio-golfo.jpg';
 import vesuvioMare from '@/assets/foto/vesuvio-mare.jpg';
 import pizzaInSala from '@/assets/foto/pizza-in-sala.jpg';
 import salaPareteePietra from '@/assets/foto/sala-parete-pietra.jpg';
+// Foto del cliente
+import pompeiVesuvio from '@/assets/foto/pompei-vesuvio.jpg';
+import giovanniPizzaiolo from '@/assets/foto/giovanni-pizzaiolo.jpg';
 
 export interface Photo {
   src: ImageMetadata;
@@ -43,28 +46,31 @@ export interface Photo {
 const p = (src: ImageMetadata, alt: string, pos?: string): Photo => ({ src, alt, pos });
 
 export const photos = {
-  impastoMani: p(impastoMani, 'Mani infarinate che reggono un panetto di impasto per pizza napoletana', '50% 40%'),
-  pizzeTavoloScuro: p(pizzeTavoloScuro, 'Due pizze napoletane appena sfornate su un tavolo scuro'),
-  pizzaNapoletanaBasilico: p(pizzaNapoletanaBasilico, 'Pizza napoletana con pomodoro, mozzarella e basilico fresco'),
+  impastoMani: p(impastoMani, 'Mani infarinate che reggono un panetto di impasto per pizza', '50% 40%'),
+  pizzeTavoloScuro: p(pizzeTavoloScuro, 'Due pizze appena sfornate su un tavolo scuro'),
+  pizzaNapoletanaBasilico: p(pizzaNapoletanaBasilico, 'Pizza con pomodoro San Marzano, fiordilatte e basilico fresco'),
   pizzaTaglieroForno: p(pizzaTaglieroForno, 'Pizza margherita su tagliere di legno davanti al forno acceso', '50% 60%'),
   margheritaDettaglio: p(margheritaDettaglio, 'Dettaglio di una margherita con cornicione alto e basilico'),
   impastoFarina: p(impastoFarina, 'Pizzaiolo che lavora l’impasto sul banco infarinato'),
-  pizzaNelForno: p(pizzaNelForno, 'Pizza napoletana che cuoce nel forno a legna tra le fiamme', '50% 60%'),
+  pizzaNelForno: p(pizzaNelForno, 'Pizza che cuoce nel forno a legna tra le fiamme', '50% 60%'),
   margheritaLegno: p(margheritaLegno, 'Pizza margherita servita su un tavolo di legno'),
   fiammaForno: p(fiammaForno, 'Fiamma viva nella bocca di un forno a legna'),
   pizzeBancone: p(pizzeBancone, 'Pizze pronte sul bancone della pizzeria'),
   fornoALegna: p(fornoALegna, 'Forno a legna in mattoni con il fuoco acceso'),
-  fornoCupola: p(fornoCupola, 'Cupola del forno per pizza napoletana con il fuoco acceso'),
-  margheritaPiatto: p(margheritaPiatto, 'Margherita napoletana servita al tavolo'),
+  fornoCupola: p(fornoCupola, 'Cupola del forno per la pizza con il fuoco acceso'),
+  margheritaPiatto: p(margheritaPiatto, 'Pizza margherita servita al tavolo'),
   fornoPizzeCottura: p(fornoPizzeCottura, 'Due pizze in cottura nel forno a legna accanto al fuoco'),
   pizzaPala: p(pizzaPala, 'Pizza sulla pala davanti alla bocca del forno', '50% 60%'),
   fornoFuoco: p(fornoFuoco, 'Fuoco di legna nel forno della pizzeria'),
   salaCalda: p(salaCalda, 'Sala della pizzeria con luci calde e bancone in legno'),
   fornoPizzaBrace: p(fornoPizzaBrace, 'Pizza che cuoce sulla brace del forno a legna'),
   salaApplique: p(salaApplique, 'Applique dalla luce calda sulle pareti della sala'),
-  pizzeFinestra: p(pizzeFinestra, 'Pizze napoletane servite al tavolo vicino alla vetrata'),
+  pizzeFinestra: p(pizzeFinestra, 'Pizze contemporanee servite al tavolo vicino alla vetrata'),
   vesuvioGolfo: p(vesuvioGolfo, 'Il Vesuvio visto dal golfo di Napoli'),
   vesuvioMare: p(vesuvioMare, 'Il Vesuvio che domina il mare di Napoli', '50% 70%'),
-  pizzaInSala: p(pizzaInSala, 'Pizza napoletana in primo piano nella sala della pizzeria'),
+  pizzaInSala: p(pizzaInSala, 'Pizza in primo piano nella sala della pizzeria'),
   salaPareteePietra: p(salaPareteePietra, 'Sala con parete in pietra lavica scura e lampade a sospensione', '50% 50%'),
+  // Foto del cliente (vere)
+  pompeiVesuvio: p(pompeiVesuvio, 'Gli scavi di Pompei con il Vesuvio sullo sfondo, al tramonto', '50% 40%'),
+  giovanniPizzaiolo: p(giovanniPizzaiolo, 'Giovanni, mastro pizzaiolo di 84010, mentre condisce le pizze al banco', '50% 35%'),
 };
